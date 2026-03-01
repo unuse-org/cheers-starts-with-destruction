@@ -12,9 +12,9 @@
 - [x] `MockSensorInput` 実装（キーボード入力でテスト可能に）
 
 ### グラスシステム
-- [ ] `GlassData` ScriptableObject定義
-- [ ] `PlayerGlass` 実装（耐久値管理）
-- [ ] ビールジョッキのデータアセット作成
+- [x] `GlassData` ScriptableObject定義
+- [x] `PlayerGlass` 実装（耐久値管理）
+- [x] ビールジョッキのデータアセット作成（Unity Editor上で作成が必要）
 
 ### ゲームフロー
 - [ ] `GameManager` 実装（状態遷移管理）
