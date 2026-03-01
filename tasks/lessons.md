@@ -7,7 +7,10 @@
 
 ## Unity関連
 
-（Unity固有の学びを記載）
+### IDE診断の `using` 削除提案を鵜呑みにしない
+- **発生**: IDE が `using System;` を「不要」と診断 → 削除 → `Action<T>` が解決できずコンパイルエラー
+- **原因**: `Action<T>` は `System` 名前空間。インターフェース定義側に `using System;` があっても、実装側にも必要
+- **ルール**: `using` の削除はコンパイルが通ることを確認してから行う。特に `System`, `System.Collections.Generic` 等の基本名前空間は安易に削除しない
 
 ---
 
