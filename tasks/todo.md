@@ -7,9 +7,9 @@
 ## Phase 1: コア実装
 
 ### 入力システム
-- [ ] `ISensorInput` インターフェース定義
-- [ ] `CheersInputData`, `VoiceInputData` 構造体定義
-- [ ] `MockSensorInput` 実装（キーボード入力でテスト可能に）
+- [x] `ISensorInput` インターフェース定義
+- [x] `CheersInputData`, `VoiceInputData` 構造体定義
+- [x] `MockSensorInput` 実装（キーボード入力でテスト可能に）
 
 ### グラスシステム
 - [ ] `GlassData` ScriptableObject定義
