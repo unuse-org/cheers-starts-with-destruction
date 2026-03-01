@@ -17,9 +17,9 @@
 - [x] ビールジョッキのデータアセット作成（Unity Editor上で作成が必要）
 
 ### ゲームフロー
-- [ ] `GameManager` 実装（状態遷移管理）
-- [ ] シーン構成（Title, Game, Score）
-- [ ] 基本的な画面遷移
+- [x] `GameManager` 実装（状態遷移管理）
+- [x] シーン構成（Title, Game, Score）← シングルシーン＋UIパネル切り替え方式を採用
+- [x] 基本的な画面遷移
 
 ### 仮UI
 - [ ] `TitleUI` 実装

@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c562fbff54a2147dea926a1062a74427, type: 3}
   m_Name: GlassData
   m_EditorClassIdentifier: Assembly-CSharp::CheersGame.Data.GlassData
-  GlassName: 
+  GlassName: "\u30D3\u30FC\u30EB\u30B8\u30E7\u30C3\u30AD"
   MaxDurability: 100
   Icon: {fileID: 0}
   ModelPrefab: {fileID: 0}
