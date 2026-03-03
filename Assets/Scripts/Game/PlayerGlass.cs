@@ -35,7 +35,7 @@ namespace CheersGame.Game
         /// </summary>
         public void TakeDamage(int damage)
         {
-            if (IsBroken) return;
+            if (IsBroken || GlassData == null) return;
 
             int actualDamage = Mathf.RoundToInt(damage * GlassData.DamageMultiplier);
             CurrentDurability = Mathf.Max(0, CurrentDurability - actualDamage);
