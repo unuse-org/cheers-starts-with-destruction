@@ -29,8 +29,8 @@
 ### 日本語フォント
 - [x] Noto Sans JP フォントファイル配置（`Assets/Fonts/`）
 - [x] 日本語文字リスト作成（`Assets/Fonts/japanese_characters.txt`）
-- [ ] Font Asset 生成（Unity Editor で手動作業）
-- [ ] TMP Settings デフォルトフォント変更（Unity Editor で手動作業）
+- [x] Font Asset 生成（Unity Editor で手動作業）
+- [x] TMP Settings デフォルトフォント変更（Unity Editor で手動作業）
 
 ---
 
