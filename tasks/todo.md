@@ -7,24 +7,30 @@
 ## Phase 1: コア実装
 
 ### 入力システム
-- [ ] `ISensorInput` インターフェース定義
-- [ ] `CheersInputData`, `VoiceInputData` 構造体定義
-- [ ] `MockSensorInput` 実装（キーボード入力でテスト可能に）
+- [x] `ISensorInput` インターフェース定義
+- [x] `CheersInputData`, `VoiceInputData` 構造体定義
+- [x] `MockSensorInput` 実装（キーボード入力でテスト可能に）
 
 ### グラスシステム
-- [ ] `GlassData` ScriptableObject定義
-- [ ] `PlayerGlass` 実装（耐久値管理）
-- [ ] ビールジョッキのデータアセット作成
+- [x] `GlassData` ScriptableObject定義
+- [x] `PlayerGlass` 実装（耐久値管理）
+- [x] ビールジョッキのデータアセット作成（Unity Editor上で作成が必要）
 
 ### ゲームフロー
-- [ ] `GameManager` 実装（状態遷移管理）
-- [ ] シーン構成（Title, Game, Score）
-- [ ] 基本的な画面遷移
+- [x] `GameManager` 実装（状態遷移管理）
+- [x] シーン構成（Title, Game, Score）← シングルシーン＋UIパネル切り替え方式を採用
+- [x] 基本的な画面遷移
 
 ### 仮UI
-- [ ] `TitleUI` 実装
-- [ ] `GameUI` 実装（耐久値表示、撃破数表示）
-- [ ] `ScoreUI` 実装
+- [x] `TitleUI` 実装
+- [x] `GameUI` 実装（耐久値表示、撃破数表示）
+- [x] `ScoreUI` 実装
+
+### 日本語フォント
+- [x] Noto Sans JP フォントファイル配置（`Assets/Fonts/`）
+- [x] 日本語文字リスト作成（`Assets/Fonts/japanese_characters.txt`）
+- [ ] Font Asset 生成（Unity Editor で手動作業）
+- [ ] TMP Settings デフォルトフォント変更（Unity Editor で手動作業）
 
 ---
 
