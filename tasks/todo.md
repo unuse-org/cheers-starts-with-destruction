@@ -22,9 +22,15 @@
 - [x] 基本的な画面遷移
 
 ### 仮UI
-- [ ] `TitleUI` 実装
-- [ ] `GameUI` 実装（耐久値表示、撃破数表示）
-- [ ] `ScoreUI` 実装
+- [x] `TitleUI` 実装
+- [x] `GameUI` 実装（耐久値表示、撃破数表示）
+- [x] `ScoreUI` 実装
+
+### 日本語フォント
+- [x] Noto Sans JP フォントファイル配置（`Assets/Fonts/`）
+- [x] 日本語文字リスト作成（`Assets/Fonts/japanese_characters.txt`）
+- [ ] Font Asset 生成（Unity Editor で手動作業）
+- [ ] TMP Settings デフォルトフォント変更（Unity Editor で手動作業）
 
 ---
 
