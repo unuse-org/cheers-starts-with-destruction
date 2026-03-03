@@ -30,6 +30,11 @@ namespace CheersGame.UI
                 _playerGlass.OnDurabilityChanged += HandleDurabilityChanged;
             }
 
+            if (_gameManager != null)
+            {
+                _gameManager.OnDefeatCountChanged += HandleDefeatCountChanged;
+            }
+
             RefreshAll();
             Debug.Log("[GameUI] Enabled.");
         }
@@ -40,16 +45,21 @@ namespace CheersGame.UI
             {
                 _playerGlass.OnDurabilityChanged -= HandleDurabilityChanged;
             }
-        }
 
-        private void Update()
-        {
-            UpdateDefeatCount();
+            if (_gameManager != null)
+            {
+                _gameManager.OnDefeatCountChanged -= HandleDefeatCountChanged;
+            }
         }
 
         private void HandleDurabilityChanged(int currentDurability)
         {
             UpdateDurabilityDisplay(currentDurability);
+        }
+
+        private void HandleDefeatCountChanged(int defeatCount)
+        {
+            UpdateDefeatCount(defeatCount);
         }
 
         private void RefreshAll()
@@ -60,7 +70,7 @@ namespace CheersGame.UI
                 UpdateGlassName(_playerGlass.GlassData.GlassName);
             }
 
-            UpdateDefeatCount();
+            UpdateDefeatCount(_gameManager != null ? _gameManager.DefeatCount : 0);
         }
 
         private void UpdateDurabilityDisplay(int currentDurability)
@@ -81,11 +91,11 @@ namespace CheersGame.UI
             }
         }
 
-        private void UpdateDefeatCount()
+        private void UpdateDefeatCount(int defeatCount)
         {
-            if (_gameManager != null && _defeatCountText != null)
+            if (_defeatCountText != null)
             {
-                _defeatCountText.text = $"撃破: {_gameManager.DefeatCount}";
+                _defeatCountText.text = $"撃破: {defeatCount}";
             }
         }
 

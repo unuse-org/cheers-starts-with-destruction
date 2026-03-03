@@ -34,6 +34,9 @@ namespace CheersGame.Game
         /// <summary>状態遷移時に発火（新しい状態を通知）</summary>
         public event Action<GameState> OnStateChanged;
 
+        /// <summary>撃破数変化時に発火（現在の撃破数を通知）</summary>
+        public event Action<int> OnDefeatCountChanged;
+
         private ISensorInput _sensorInput;
 
         private void Awake()
@@ -117,6 +120,7 @@ namespace CheersGame.Game
         {
             DefeatCount++;
             Debug.Log($"[GameManager] DefeatCount={DefeatCount}");
+            OnDefeatCountChanged?.Invoke(DefeatCount);
         }
 
         private void TransitionTo(GameState newState)
