@@ -22,6 +22,8 @@ namespace CheersGame.Game
         [SerializeField] private MonoBehaviour _sensorInputComponent;
         [SerializeField] private PlayerGlass _playerGlass;
         [SerializeField] private GlassData _initialGlassData;
+        [SerializeField] private NPCController _npcController;
+        [SerializeField] private NPCData[] _npcDataList;
 
         [Header("Screens")]
         [SerializeField] private GameObject _titleScreen;
@@ -30,12 +32,16 @@ namespace CheersGame.Game
 
         public GameState CurrentState { get; private set; }
         public int DefeatCount { get; private set; }
+        public NPCData CurrentNPC { get; private set; }
 
         /// <summary>状態遷移時に発火（新しい状態を通知）</summary>
         public event Action<GameState> OnStateChanged;
 
         /// <summary>撃破数変化時に発火（現在の撃破数を通知）</summary>
         public event Action<int> OnDefeatCountChanged;
+
+        /// <summary>NPC変更時に発火（新しいNPCDataを通知）</summary>
+        public event Action<NPCData> OnNPCChanged;
 
         private ISensorInput _sensorInput;
 
@@ -79,6 +85,18 @@ namespace CheersGame.Game
             TransitionTo(GameState.Title);
         }
 
+#if UNITY_EDITOR
+        private void Update()
+        {
+            // デバッグ用: Escapeキーでタイトルに戻る
+            if (UnityEngine.Input.GetKeyDown(KeyCode.Escape) && CurrentState != GameState.Title)
+            {
+                Debug.Log("[GameManager] Debug: Force return to Title");
+                TransitionTo(GameState.Title);
+            }
+        }
+#endif
+
         private void HandleCheersInput(CheersInputData data)
         {
             switch (CurrentState)
@@ -111,6 +129,26 @@ namespace CheersGame.Game
             }
 
             TransitionTo(GameState.Game);
+            SpawnNextNPC();
+        }
+
+        /// <summary>
+        /// NPCをランダム選択して初期化し、カウントダウンを開始する。
+        /// </summary>
+        public void SpawnNextNPC()
+        {
+            if (_npcController == null || _npcDataList == null || _npcDataList.Length == 0)
+            {
+                Debug.LogWarning("[GameManager] NPCController or NPCDataList is not configured.");
+                return;
+            }
+
+            NPCData data = _npcDataList[UnityEngine.Random.Range(0, _npcDataList.Length)];
+            CurrentNPC = data;
+            _npcController.Initialize(data);
+            Debug.Log($"[GameManager] Spawned NPC: {data.NPCName}");
+            OnNPCChanged?.Invoke(data);
+            _npcController.StartCheersSequence();
         }
 
         /// <summary>
@@ -125,6 +163,15 @@ namespace CheersGame.Game
 
         private void TransitionTo(GameState newState)
         {
+            // Game状態から離れる場合、カウントダウンを中断
+            if (CurrentState == GameState.Game && newState != GameState.Game)
+            {
+                if (_npcController != null)
+                {
+                    _npcController.CancelCheersSequence();
+                }
+            }
+
             CurrentState = newState;
             Debug.Log($"[GameManager] State -> {newState}");
 

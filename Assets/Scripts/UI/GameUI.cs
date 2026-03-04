@@ -1,6 +1,7 @@
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
+using CheersGame.Data;
 using CheersGame.Game;
 
 namespace CheersGame.UI
@@ -23,6 +24,9 @@ namespace CheersGame.UI
         [SerializeField] private TextMeshProUGUI _defeatCountText;
         [SerializeField] private TextMeshProUGUI _glassNameText;
 
+        [Header("NPC Info")]
+        [SerializeField] private TextMeshProUGUI _npcNameText;
+
         private void OnEnable()
         {
             if (_playerGlass != null)
@@ -33,6 +37,7 @@ namespace CheersGame.UI
             if (_gameManager != null)
             {
                 _gameManager.OnDefeatCountChanged += HandleDefeatCountChanged;
+                _gameManager.OnNPCChanged += HandleNPCChanged;
             }
 
             RefreshAll();
@@ -49,6 +54,7 @@ namespace CheersGame.UI
             if (_gameManager != null)
             {
                 _gameManager.OnDefeatCountChanged -= HandleDefeatCountChanged;
+                _gameManager.OnNPCChanged -= HandleNPCChanged;
             }
         }
 
@@ -62,6 +68,11 @@ namespace CheersGame.UI
             UpdateDefeatCount(defeatCount);
         }
 
+        private void HandleNPCChanged(NPCData npcData)
+        {
+            UpdateNPCName(npcData != null ? npcData.NPCName : "");
+        }
+
         private void RefreshAll()
         {
             if (_playerGlass != null && _playerGlass.GlassData != null)
@@ -71,6 +82,8 @@ namespace CheersGame.UI
             }
 
             UpdateDefeatCount(_gameManager != null ? _gameManager.DefeatCount : 0);
+            UpdateNPCName(_gameManager != null && _gameManager.CurrentNPC != null
+                ? _gameManager.CurrentNPC.NPCName : "");
         }
 
         private void UpdateDurabilityDisplay(int currentDurability)
@@ -104,6 +117,14 @@ namespace CheersGame.UI
             if (_glassNameText != null)
             {
                 _glassNameText.text = glassName;
+            }
+        }
+
+        private void UpdateNPCName(string npcName)
+        {
+            if (_npcNameText != null)
+            {
+                _npcNameText.text = npcName;
             }
         }
     }
