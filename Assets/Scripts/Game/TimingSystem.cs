@@ -50,9 +50,18 @@ namespace CheersGame.Game
         /// <summary>判定ウィンドウを開く。NPCController.OnCheersReady から呼ぶ。</summary>
         public void StartWindow()
         {
+            StartWindow(_windowDuration);
+        }
+
+        /// <summary>
+        /// 判定ウィンドウを指定した時間で開く。NPC の ReactionSpeed に応じた時間を渡す。
+        /// </summary>
+        public void StartWindow(float duration)
+        {
+            _windowDuration = duration;
             _windowStartTime = Time.time;
             IsWindowOpen = true;
-            Debug.Log("[TimingSystem] Window opened.");
+            Debug.Log($"[TimingSystem] Window opened. Duration={duration:F2}s");
         }
 
         /// <summary>判定ウィンドウを明示的に閉じる。入力受付後に BattleManager から呼ぶ。</summary>

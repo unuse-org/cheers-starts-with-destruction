@@ -47,6 +47,9 @@ namespace CheersGame.Game
         [Tooltip("SelfDestruct 時のプレイヤーへの大ダメージ")]
         [SerializeField] private int _selfDestructDamage = 40;
 
+        [Tooltip("基準ウィンドウ時間（秒）。NPC の ReactionSpeed で割って実際の時間を決定する。")]
+        [SerializeField] private float _baseWindowDuration = 2.0f;
+
         /// <summary>タイミング判定結果を通知（UIフィードバック用）</summary>
         public event Action<TimingGrade> OnTimingJudged;
 
@@ -105,8 +108,11 @@ namespace CheersGame.Game
 
         private void HandleCheersReady()
         {
-            _timingSystem.StartWindow();
-            Debug.Log("[BattleManager] Timing window opened.");
+            float reactionSpeed = _gameManager.CurrentNPC != null
+                ? _gameManager.CurrentNPC.ReactionSpeed
+                : 1.0f;
+            float duration = _baseWindowDuration / reactionSpeed;
+            _timingSystem.StartWindow(duration);
         }
 
         private void HandleVoiceDetected(VoiceInputData data)
