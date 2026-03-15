@@ -135,8 +135,12 @@ namespace CheersGame.Game
         private void HandleWindowExpired()
         {
             if (_gameManager == null || _gameManager.CurrentState != GameState.Game) return;
-            Debug.Log("[BattleManager] Window expired - restarting sequence.");
-            _npcController.StartCheersSequence();
+            Debug.Log("[BattleManager] Window expired - Defeat.");
+            OnTimingJudged?.Invoke(TimingGrade.Miss);
+            OnCheersResolved?.Invoke(CheersResult.Defeat);
+            _playerGlass.TakeDamage(_defeatDamage);
+            if (!_playerGlass.IsBroken)
+                _npcController.StartCheersSequence();
         }
 
         private CheersResult JudgeCheers(
