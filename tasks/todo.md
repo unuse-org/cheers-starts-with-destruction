@@ -46,7 +46,9 @@
 ### タイミングシステム
 - [x] `TimingSystem` 実装
 - [x] タイミングガイドUI実装（`GameUI` に追加）
-- [x] `TimingGrade` 判定ロジック
+- [x] タイミング判定：連続スコア方式に変更（`GetTimingScore()` 0〜1）
+- [x] UI変更：左右ジョッキ衝突方式（`_leftGlassRect` / `_rightGlassRect`）
+- [ ] Unity Editor：ジョッキ画像UIオブジェクト作成・インスペクター設定（↓参照）
 
 ### 乾杯判定
 - [x] `BattleManager` 実装
@@ -108,25 +110,25 @@
    - `Battle Manager` → BattleManager
    - `Timing System` → TimingSystem
    - `Countdown Text` → カウントダウン表示用 TextMeshProUGUI
-   - `Timing Guide Panel` → タイミングバー全体のパネル（任意）
-   - `Timing Bar Rect` → タイミングバーの RectTransform（任意）
-   - `Timing Indicator` → 移動するインジケーターの RectTransform（任意）
+   - `Timing Guide Panel` → タイミングガイド全体のパネル
+   - `Left Glass Rect` → 左ジョッキ Image の RectTransform
+   - `Right Glass Rect` → 右ジョッキ Image の RectTransform
+   - `Glass Start Offset` → 500（画面幅に応じて調整）
    - `Result Text` → 結果表示用 TextMeshProUGUI
+   - ~~`Timing Bar Rect`~~、~~`Timing Indicator`~~ → 削除済み
 
-4. **タイミングガイドUI構成例（任意・後でも可）:**
+4. **タイミングガイドUI構成（LeftGlass / RightGlass の作成）:**
    ```
    TimingGuidePanel (GameObject)
-   ├── TimingBar (RectTransform, 幅400px程度)
-   │   ├── GoodZone  (Image, 中央, 幅=好適幅の60% * 400)
-   │   ├── GreatZone (Image, 中央, 幅=35% * 400 * 2)
-   │   ├── PerfectZone (Image, 中央, 幅=15% * 400 * 2)
-   │   └── Indicator (Image, 移動するインジケーター ★)
+   ├── LeftGlass  (Image, ジョッキスプライト)
+   └── RightGlass (Image, ジョッキスプライト, flipX=true)
    ```
 
 **検証チェックリスト:**
 - [ ] Unity でコンパイルエラーがないこと
 - [ ] Play モードで 3, 2, 1, 乾杯! の後 Space キーで乾杯判定が走ること
-- [ ] ログに `Timing=Perfect/Great/Good/Miss, Result=Victory/...` が出ること
+- [ ] ログに `Score=0.xx, Result=Victory/...` が出ること
+- [ ] 左右ジョッキが中央に向かって移動することを確認
 - [ ] 撃破でNPCが切り替わること（撃破数が増えること）
 - [ ] Defeat/SelfDestructでカウントダウンが再スタートすること
 - [ ] 耐久値0でスコア画面に遷移すること
