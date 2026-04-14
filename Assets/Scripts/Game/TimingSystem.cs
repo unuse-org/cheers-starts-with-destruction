@@ -3,18 +3,10 @@ using UnityEngine;
 
 namespace CheersGame.Game
 {
-    public enum TimingGrade
-    {
-        Perfect,
-        Great,
-        Good,
-        Miss,
-    }
-
     /// <summary>
     /// 乾杯タイミング判定を管理する。
     /// NPCController.OnCheersReady を受けて判定ウィンドウを開き、
-    /// プレイヤーの入力タイミングに応じて TimingGrade を返す。
+    /// プレイヤーの入力タイミングに応じた連続スコア（0〜1）を返す。
     /// </summary>
     public class TimingSystem : MonoBehaviour
     {
@@ -22,13 +14,13 @@ namespace CheersGame.Game
         [Tooltip("判定ウィンドウの総時間（秒）")]
         [SerializeField] private float _windowDuration = 2.0f;
 
-        [Tooltip("Perfect 判定の中心からのズレ許容（秒）")]
+        [Tooltip("Perfect ゾーン帯の半径（秒）— UI表示用")]
         [SerializeField] private float _perfectRadius = 0.15f;
 
-        [Tooltip("Great 判定の中心からのズレ許容（秒）")]
+        [Tooltip("Great ゾーン帯の半径（秒）— UI表示用")]
         [SerializeField] private float _greatRadius = 0.35f;
 
-        [Tooltip("Good 判定の中心からのズレ許容（秒）")]
+        [Tooltip("Good ゾーン帯の半径（秒）— この範囲外はスコア 0")]
         [SerializeField] private float _goodRadius = 0.6f;
 
         /// <summary>判定ウィンドウが開いているか</summary>
@@ -36,11 +28,16 @@ namespace CheersGame.Game
 
         /// <summary>
         /// ウィンドウの進行度（0 = 開始, 1 = 終了）。
-        /// インジケーターUI のアニメーションに使用する。
         /// </summary>
         public float WindowProgress => IsWindowOpen
             ? Mathf.Clamp01((Time.time - _windowStartTime) / _windowDuration)
             : 0f;
+
+        /// <summary>
+        /// ジョッキの接近進行度（0 = 画面端, 1 = 中央衝突）。
+        /// WindowProgress = 0.5 で 1 に達し、以降は 1 を保持する。
+        /// </summary>
+        public float GlassProgress => IsWindowOpen ? Mathf.Clamp01(WindowProgress * 2f) : 0f;
 
         /// <summary>判定ウィンドウがタイムアウトで閉じたときに発火</summary>
         public event Action OnWindowExpired;
@@ -71,21 +68,16 @@ namespace CheersGame.Game
         }
 
         /// <summary>
-        /// 現在時刻でタイミング判定を行う。
-        /// ウィンドウが閉じていれば Miss を返す。
+        /// 連続タイミングスコアを返す（0 = Miss, 1 = Perfect 中央）。
+        /// 中央からの偏差が goodRadius 以上の場合は 0 を返す。
         /// </summary>
-        public TimingGrade JudgeTiming()
+        public float GetTimingScore()
         {
-            if (!IsWindowOpen) return TimingGrade.Miss;
+            if (!IsWindowOpen) return 0f;
 
-            float elapsed = Time.time - _windowStartTime;
-            float center = _windowDuration * 0.5f;
-            float deviation = Mathf.Abs(elapsed - center);
-
-            if (deviation <= _perfectRadius) return TimingGrade.Perfect;
-            if (deviation <= _greatRadius)   return TimingGrade.Great;
-            if (deviation <= _goodRadius)    return TimingGrade.Good;
-            return TimingGrade.Miss;
+            float deviation = Mathf.Abs((Time.time - _windowStartTime) - _windowDuration * 0.5f);
+            if (deviation >= _goodRadius) return 0f;
+            return 1f - (deviation / _goodRadius);
         }
 
         private void Update()

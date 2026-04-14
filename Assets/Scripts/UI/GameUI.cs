@@ -37,10 +37,12 @@ namespace CheersGame.UI
         [Header("Timing Guide")]
         [Tooltip("タイミングガイド全体のパネル。ウィンドウ開閉に合わせて表示/非表示する。")]
         [SerializeField] private GameObject _timingGuidePanel;
-        [Tooltip("タイミングバー全体の RectTransform（インジケーターの移動範囲の基準）")]
-        [SerializeField] private RectTransform _timingBarRect;
-        [Tooltip("移動するインジケーターの RectTransform")]
-        [SerializeField] private RectTransform _timingIndicator;
+        [Tooltip("左から移動するジョッキ画像の RectTransform")]
+        [SerializeField] private RectTransform _leftGlassRect;
+        [Tooltip("右から移動するジョッキ画像の RectTransform")]
+        [SerializeField] private RectTransform _rightGlassRect;
+        [Tooltip("ジョッキの初期 X 位置（中央からのオフセット px）")]
+        [SerializeField] private float _glassStartOffset = 500f;
 
         [Header("Result")]
         [SerializeField] private TextMeshProUGUI _resultText;
@@ -66,7 +68,6 @@ namespace CheersGame.UI
 
             if (_battleManager != null)
             {
-                _battleManager.OnTimingJudged += HandleTimingJudged;
                 _battleManager.OnCheersResolved += HandleCheersResolved;
             }
 
@@ -90,7 +91,6 @@ namespace CheersGame.UI
 
             if (_battleManager != null)
             {
-                _battleManager.OnTimingJudged -= HandleTimingJudged;
                 _battleManager.OnCheersResolved -= HandleCheersResolved;
             }
         }
@@ -124,35 +124,19 @@ namespace CheersGame.UI
             _countdownText.text = count == 0 ? "乾杯！" : count.ToString();
         }
 
-        private void HandleTimingJudged(TimingGrade grade)
-        {
-            if (_resultText == null) return;
-
-            _resultText.text = grade switch
-            {
-                TimingGrade.Perfect => "Perfect!",
-                TimingGrade.Great   => "Great!",
-                TimingGrade.Good    => "Good!",
-                TimingGrade.Miss    => "Miss...",
-                _                  => "",
-            };
-        }
-
         private void HandleCheersResolved(CheersResult result)
         {
             if (_resultText != null)
             {
-                string label = result switch
+                _resultText.text = result switch
                 {
-                    CheersResult.Victory     => "勝利！",
-                    CheersResult.Draw        => "引き分け",
-                    CheersResult.Defeat      => "敗北...",
-                    CheersResult.Whiff       => "スカ！",
+                    CheersResult.Victory      => "勝利！",
+                    CheersResult.Draw         => "引き分け",
+                    CheersResult.Defeat       => "敗北...",
+                    CheersResult.Whiff        => "スカ！",
                     CheersResult.SelfDestruct => "自爆！！",
-                    _                        => "",
+                    _                         => "",
                 };
-                // タイミング表示の後ろに結果を追記
-                _resultText.text += $"\n{label}";
             }
 
             if (_resultClearCoroutine != null)
@@ -174,12 +158,11 @@ namespace CheersGame.UI
                 _timingGuideVisible = shouldShow;
             }
 
-            if (shouldShow && _timingIndicator != null && _timingBarRect != null)
-            {
-                float halfWidth = _timingBarRect.rect.width * 0.5f;
-                float x = Mathf.Lerp(-halfWidth, halfWidth, _timingSystem.WindowProgress);
-                _timingIndicator.anchoredPosition = new Vector2(x, _timingIndicator.anchoredPosition.y);
-            }
+            if (!shouldShow) return;
+
+            float x = Mathf.Lerp(_glassStartOffset, 0f, _timingSystem.GlassProgress);
+            if (_leftGlassRect  != null) _leftGlassRect.anchoredPosition  = new Vector2(-x, _leftGlassRect.anchoredPosition.y);
+            if (_rightGlassRect != null) _rightGlassRect.anchoredPosition = new Vector2( x, _rightGlassRect.anchoredPosition.y);
         }
 
         // ── 表示更新 ────────────────────────────────────────────────────────

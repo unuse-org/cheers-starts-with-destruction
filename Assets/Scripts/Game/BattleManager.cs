@@ -50,8 +50,11 @@ namespace CheersGame.Game
         [Tooltip("基準ウィンドウ時間（秒）。NPC の ReactionSpeed で割って実際の時間を決定する。")]
         [SerializeField] private float _baseWindowDuration = 2.0f;
 
-        /// <summary>タイミング判定結果を通知（UIフィードバック用）</summary>
-        public event Action<TimingGrade> OnTimingJudged;
+        [Tooltip("Perfect 中央でのタイミング倍率上限（連続スコア 1.0 のときに適用）")]
+        [SerializeField] private float _maxTimingMultiplier = 1.5f;
+
+        /// <summary>タイミングスコア（0〜1）を通知（UIフィードバック用）</summary>
+        public event Action<float> OnTimingJudged;
 
         /// <summary>乾杯結果を通知（UIフィードバック用）</summary>
         public event Action<CheersResult> OnCheersResolved;
@@ -126,13 +129,13 @@ namespace CheersGame.Game
             if (_gameManager.CurrentNPC == null) return;
             if (!_timingSystem.IsWindowOpen) return;
 
-            TimingGrade timing = _timingSystem.JudgeTiming();
-            CheersResult result = JudgeCheers(data, _lastVoiceData, _gameManager.CurrentNPC, timing);
+            float score = _timingSystem.GetTimingScore();
+            CheersResult result = JudgeCheers(data, _lastVoiceData, _gameManager.CurrentNPC, score);
 
             _timingSystem.CloseWindow();
 
-            Debug.Log($"[BattleManager] Timing={timing}, Result={result}");
-            OnTimingJudged?.Invoke(timing);
+            Debug.Log($"[BattleManager] Score={score:F2}, Result={result}");
+            OnTimingJudged?.Invoke(score);
             OnCheersResolved?.Invoke(result);
 
             ResolveResult(result);
@@ -142,7 +145,7 @@ namespace CheersGame.Game
         {
             if (_gameManager == null || _gameManager.CurrentState != GameState.Game) return;
             Debug.Log("[BattleManager] Window expired - Defeat.");
-            OnTimingJudged?.Invoke(TimingGrade.Miss);
+            OnTimingJudged?.Invoke(0f);
             OnCheersResolved?.Invoke(CheersResult.Defeat);
             _playerGlass.TakeDamage(_defeatDamage);
             if (!_playerGlass.IsBroken)
@@ -153,15 +156,15 @@ namespace CheersGame.Game
             CheersInputData input,
             VoiceInputData voice,
             NPCData npc,
-            TimingGrade timing)
+            float timingScore)
         {
             if (Mathf.Abs(input.Angle) >= _badAngleThreshold)
                 return CheersResult.SelfDestruct;
 
-            if (timing == TimingGrade.Miss)
+            if (timingScore <= 0f)
                 return CheersResult.Whiff;
 
-            float attackPower = CalculateAttackPower(timing, voice.Volume);
+            float attackPower = CalculateAttackPower(timingScore, voice.Volume);
             float defense = npc.DefenseThreshold;
 
             if (attackPower > defense * 1.2f) return CheersResult.Victory;
@@ -169,15 +172,9 @@ namespace CheersGame.Game
             return CheersResult.Defeat;
         }
 
-        private float CalculateAttackPower(TimingGrade timing, float voiceVolume)
+        private float CalculateAttackPower(float timingScore, float voiceVolume)
         {
-            float timingMultiplier = timing switch
-            {
-                TimingGrade.Perfect => 1.5f,
-                TimingGrade.Great   => 1.2f,
-                TimingGrade.Good    => 1.0f,
-                _                  => 0.0f,
-            };
+            float timingMultiplier = timingScore * _maxTimingMultiplier;
             float voiceBonus = 1.0f + (voiceVolume * 0.5f);
             return _baseAttackPower * timingMultiplier * voiceBonus;
         }
