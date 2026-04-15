@@ -44,15 +44,17 @@
 - [x] NPC3種類のデータアセット作成（Unity Editor手動作業 ↓参照）
 
 ### タイミングシステム
-- [ ] `TimingSystem` 実装
-- [ ] タイミングガイドUI実装
-- [ ] `TimingGrade` 判定ロジック
+- [x] `TimingSystem` 実装
+- [x] タイミングガイドUI実装（`GameUI` に追加）
+- [x] タイミング判定：連続スコア方式に変更（`GetTimingScore()` 0〜1）
+- [x] UI変更：左右ジョッキ衝突方式（`_leftGlassRect` / `_rightGlassRect`）
+- [ ] Unity Editor：ジョッキ画像UIオブジェクト作成・インスペクター設定（↓参照）
 
 ### 乾杯判定
-- [ ] `BattleManager` 実装
-- [ ] 攻撃力計算（タイミング × 声量）
-- [ ] 勝敗判定ロジック
-- [ ] ダメージ処理
+- [x] `BattleManager` 実装
+- [x] 攻撃力計算（タイミング × 声量）
+- [x] 勝敗判定ロジック
+- [x] ダメージ処理
 
 ---
 
@@ -88,6 +90,50 @@
 ---
 
 ## レビュー・メモ
+
+### タイミングシステム・バトル実装（Phase 2）
+
+**Unity Editor 手動作業:**
+
+1. **シーン内に `BattleManager` GameObjectを追加:**
+   - Inspector で以下を設定:
+     - `Game Manager` → GameManager
+     - `Npc Controller` → NPCController
+     - `Player Glass` → PlayerGlass
+     - `Timing System` → TimingSystem（新規追加GameObjectに）
+     - `Sensor Input Component` → MockSensorInput
+
+2. **シーン内に `TimingSystem` GameObjectを追加:**（BattleManagerと同じかサブオブジェクトでもOK）
+
+3. **`GameUI` の Inspector に追加フィールドを設定:**
+   - `Npc Controller` → NPCController
+   - `Battle Manager` → BattleManager
+   - `Timing System` → TimingSystem
+   - `Countdown Text` → カウントダウン表示用 TextMeshProUGUI
+   - `Timing Guide Panel` → タイミングガイド全体のパネル
+   - `Left Glass Rect` → 左ジョッキ Image の RectTransform
+   - `Right Glass Rect` → 右ジョッキ Image の RectTransform
+   - `Glass Start Offset` → 500（画面幅に応じて調整）
+   - `Result Text` → 結果表示用 TextMeshProUGUI
+   - ~~`Timing Bar Rect`~~、~~`Timing Indicator`~~ → 削除済み
+
+4. **タイミングガイドUI構成（LeftGlass / RightGlass の作成）:**
+   ```
+   TimingGuidePanel (GameObject)
+   ├── LeftGlass  (Image, ジョッキスプライト)
+   └── RightGlass (Image, ジョッキスプライト, flipX=true)
+   ```
+
+**検証チェックリスト:**
+- [ ] Unity でコンパイルエラーがないこと
+- [ ] Play モードで 3, 2, 1, 乾杯! の後 Space キーで乾杯判定が走ること
+- [ ] ログに `Score=0.xx, Result=Victory/...` が出ること
+- [ ] 左右ジョッキが中央に向かって移動することを確認
+- [ ] 撃破でNPCが切り替わること（撃破数が増えること）
+- [ ] Defeat/SelfDestructでカウントダウンが再スタートすること
+- [ ] 耐久値0でスコア画面に遷移すること
+
+
 
 ### NPCシステム実装（Phase 2）
 
