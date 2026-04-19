@@ -12,6 +12,7 @@ namespace CheersGame.Game
     public class NPCController : MonoBehaviour
     {
         [SerializeField] private float _countdownInterval = 1.0f;
+        [SerializeField] private SpriteCharacterView _characterView;
 
         public NPCData NPCData { get; private set; }
 
@@ -29,6 +30,7 @@ namespace CheersGame.Game
         public void Initialize(NPCData data)
         {
             NPCData = data;
+            _characterView?.Show(data);
             Debug.Log($"[NPCController] Initialized: {data.NPCName}");
         }
 
@@ -37,7 +39,11 @@ namespace CheersGame.Game
         /// </summary>
         public void StartCheersSequence()
         {
-            CancelCheersSequence();
+            if (_countdownCoroutine != null)
+            {
+                StopCoroutine(_countdownCoroutine);
+                _countdownCoroutine = null;
+            }
             _countdownCoroutine = StartCoroutine(CountdownCoroutine());
         }
 
@@ -51,6 +57,8 @@ namespace CheersGame.Game
                 StopCoroutine(_countdownCoroutine);
                 _countdownCoroutine = null;
             }
+
+            _characterView?.Hide();
         }
 
         private IEnumerator CountdownCoroutine()

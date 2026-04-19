@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using UnityEngine;
 using CheersGame.Input;
 using CheersGame.Data;
@@ -52,6 +53,9 @@ namespace CheersGame.Game
 
         [Tooltip("Perfect 中央でのタイミング倍率上限（連続スコア 1.0 のときに適用）")]
         [SerializeField] private float _maxTimingMultiplier = 1.5f;
+
+        [Tooltip("結果表示後、次のNPCが登場するまでの待機時間（秒）")]
+        [SerializeField] private float _resultDisplayDuration = 1.5f;
 
         /// <summary>タイミングスコア（0〜1）を通知（UIフィードバック用）</summary>
         public event Action<float> OnTimingJudged;
@@ -185,14 +189,14 @@ namespace CheersGame.Game
             {
                 case CheersResult.Victory:
                     _gameManager.AddDefeat();
-                    _gameManager.SpawnNextNPC();
+                    StartCoroutine(SpawnNextNPCAfterDelay());
                     break;
 
                 case CheersResult.Draw:
                     _playerGlass.TakeDamage(_drawDamage);
                     _gameManager.AddDefeat();
                     if (!_playerGlass.IsBroken)
-                        _gameManager.SpawnNextNPC();
+                        StartCoroutine(SpawnNextNPCAfterDelay());
                     break;
 
                 case CheersResult.Defeat:
@@ -211,6 +215,12 @@ namespace CheersGame.Game
                     _npcController.StartCheersSequence();
                     break;
             }
+        }
+
+        private IEnumerator SpawnNextNPCAfterDelay()
+        {
+            yield return new WaitForSeconds(_resultDisplayDuration);
+            _gameManager.SpawnNextNPC();
         }
     }
 }
