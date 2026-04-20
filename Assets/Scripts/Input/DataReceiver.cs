@@ -22,7 +22,7 @@ public class DataReceiver : MonoBehaviour
     public int sensorId = 1;
 
     [Header("スムージング")]
-    [Tooltip("0: 追従なし（即時反映）  1: 追従なし（動かない）  推奨: 0.1〜0.3")]
+    [Tooltip("0: 追従なし（即時反映）  0.99: ほぼ追従なし（ほぼ動かない）  推奨: 0.1〜0.3")]
     [Range(0f, 0.99f)]
     public float smoothing = 0.1f;
 
