@@ -12,6 +12,7 @@ namespace CheersGame.Game
     public class NPCController : MonoBehaviour
     {
         [SerializeField] private float _countdownInterval = 1.0f;
+        [SerializeField] private bool _useCountdown = true;
         [SerializeField] private SpriteCharacterView _characterView;
 
         public NPCData NPCData { get; private set; }
@@ -36,6 +37,7 @@ namespace CheersGame.Game
 
         /// <summary>
         /// カウントダウン（3, 2, 1, 乾杯!）を開始する。
+        /// _useCountdown が false の場合は即座に乾杯!へ進む。
         /// </summary>
         public void StartCheersSequence()
         {
@@ -44,6 +46,15 @@ namespace CheersGame.Game
                 StopCoroutine(_countdownCoroutine);
                 _countdownCoroutine = null;
             }
+
+            if (!_useCountdown)
+            {
+                Debug.Log("[NPCController] 乾杯! (no countdown)");
+                OnCountdownTick?.Invoke(0);
+                OnCheersReady?.Invoke();
+                return;
+            }
+
             _countdownCoroutine = StartCoroutine(CountdownCoroutine());
         }
 
