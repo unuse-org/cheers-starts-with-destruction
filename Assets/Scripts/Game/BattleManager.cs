@@ -157,10 +157,12 @@ namespace CheersGame.Game
             {
                 case CheersResult.Victory:
                     _gameManager.AddDefeat();
+                    AudioFeedback.Instance.PlaySE(AudioFeedback.SEType.Break1);
                     StartCoroutine(SpawnNextNPCAfterDelay());
                     break;
 
                 case CheersResult.Defeat:
+                    AudioFeedback.Instance.PlaySE(AudioFeedback.SEType.Break1);
                     _npcController.StartCheersSequence();
                     break;
             }
