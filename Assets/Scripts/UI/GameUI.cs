@@ -44,13 +44,61 @@ namespace CheersGame.UI
         [Tooltip("ジョッキの初期 X 位置（中央からのオフセット px）")]
         [SerializeField] private float _glassStartOffset = 500f;
 
+        [Header("Milestone Banner")]
+        [Tooltip("score_upper.png を表示する Image（右上に配置）")]
+        [SerializeField] private Image _milestoneImage;
+        [Tooltip("\"XX人抜き達成！！\" を表示するテキスト")]
+        [SerializeField] private TextMeshProUGUI _milestoneText;
+        [Tooltip("バナーを表示し続ける秒数")]
+        [SerializeField] private float _milestoneDuration = 2f;
+        [Tooltip("5 の倍数ごとに発火（変更可能）")]
+        [SerializeField] private int _milestoneInterval = 5;
+
+        [Header("Game Over Overlay")]
+        [Tooltip("HP0時にGameScreen上に表示する全画面オーバーレイ (CanvasGroup)")]
+        [SerializeField] private CanvasGroup _gameOverOverlay;
+        [Tooltip("オーバーレイのフェードイン秒数")]
+        [SerializeField] private float _gameOverFadeInDuration = 0.3f;
+        [Tooltip("オーバーレイを表示し続ける秒数")]
+        [SerializeField] private float _gameOverHoldDuration = 1.5f;
+
         [Header("Result")]
-        [SerializeField] private TextMeshProUGUI _resultText;
-        [Tooltip("結果テキストを表示する秒数")]
+        [SerializeField] private Image _resultImage;
+        [SerializeField] private Image _scoreImage;
+        [Tooltip("score.png の左に並べる撃破数テキスト（数字のみ表示）")]
+        [SerializeField] private TextMeshProUGUI _scoreNumberText;
+        [Tooltip("結果画像を表示する秒数")]
         [SerializeField] private float _resultDisplayDuration = 1.5f;
 
-        private Coroutine _resultClearCoroutine;
+        [Header("Judge Sprites")]
+        [Tooltip("timingScore >= threshold で使用 (0.8)")]
+        [SerializeField] private Sprite _judgeIncredible;
+        [SerializeField] private Sprite _judgePerfect;
+        [SerializeField] private Sprite _judgeGreat;
+        [SerializeField] private Sprite _judgeGood;
+        [Tooltip("それ以外")]
+        [SerializeField] private Sprite _judgeBad;
+
+        [Header("Judge Thresholds")]
+        [SerializeField] private float _thresholdIncredible = 0.8f;
+        [SerializeField] private float _thresholdPerfect    = 0.6f;
+        [SerializeField] private float _thresholdGreat      = 0.4f;
+        [SerializeField] private float _thresholdGood       = 0.2f;
+
+        private Coroutine _resultCoroutine;
         private bool _timingGuideVisible;
+        private Vector2 _resultOrigPos;
+        private Vector2 _scoreOrigPos;
+        private float _lastTimingScore;
+        private Vector2 _milestoneOrigPos;
+        private Coroutine _milestoneCoroutine;
+
+        private void Start()
+        {
+            if (_resultImage   != null) _resultOrigPos   = _resultImage.rectTransform.anchoredPosition;
+            if (_scoreImage    != null) _scoreOrigPos    = _scoreImage.rectTransform.anchoredPosition;
+            if (_milestoneImage != null) _milestoneOrigPos = _milestoneImage.rectTransform.anchoredPosition;
+        }
 
         private void OnEnable()
         {
@@ -68,6 +116,7 @@ namespace CheersGame.UI
 
             if (_battleManager != null)
             {
+                _battleManager.OnTimingJudged  += HandleTimingJudged;
                 _battleManager.OnCheersResolved += HandleCheersResolved;
             }
 
@@ -91,6 +140,7 @@ namespace CheersGame.UI
 
             if (_battleManager != null)
             {
+                _battleManager.OnTimingJudged  -= HandleTimingJudged;
                 _battleManager.OnCheersResolved -= HandleCheersResolved;
             }
         }
@@ -110,6 +160,12 @@ namespace CheersGame.UI
         private void HandleDefeatCountChanged(int defeatCount)
         {
             UpdateDefeatCount(defeatCount);
+
+            if (defeatCount > 0 && defeatCount % _milestoneInterval == 0)
+            {
+                if (_milestoneCoroutine != null) StopCoroutine(_milestoneCoroutine);
+                _milestoneCoroutine = StartCoroutine(ShowMilestoneAnimation(defeatCount));
+            }
         }
 
         private void HandleNPCChanged(NPCData npcData)
@@ -121,28 +177,259 @@ namespace CheersGame.UI
         private void HandleCountdownTick(int count)
         {
             if (_countdownText == null) return;
-            _countdownText.text = count == 0 ? "乾杯！" : count.ToString();
+            _countdownText.text = count == 0 ? "" : count.ToString();
         }
 
-        private void HandleCheersResolved(CheersResult result)
+        private void HandleTimingJudged(float score) => _lastTimingScore = score;
+
+        private void HandleCheersResolved(CheersResult _)
         {
-            if (_resultText != null)
+            Sprite sprite = GetJudgeSprite(_lastTimingScore);
+
+            if (sprite == null) return;
+
+            if (_resultCoroutine != null)
+                StopCoroutine(_resultCoroutine);
+            _resultCoroutine = StartCoroutine(ShowResultAnimation(sprite));
+        }
+
+        // ── マイルストーンバナー ────────────────────────────────────────────
+
+        private IEnumerator ShowMilestoneAnimation(int count)
+        {
+            if (_milestoneImage == null) yield break;
+
+            if (_milestoneText != null)
             {
-                _resultText.text = result switch
-                {
-                    CheersResult.Victory      => "勝利！",
-                    CheersResult.Draw         => "引き分け",
-                    CheersResult.Defeat       => "敗北...",
-                    CheersResult.Whiff        => "スカ！",
-                    CheersResult.SelfDestruct => "自爆！！",
-                    _                         => "",
-                };
+                _milestoneText.text = $"{count}";
+                _milestoneText.gameObject.SetActive(true);
+                SetTextAlpha(_milestoneText, 0f);
             }
 
-            if (_resultClearCoroutine != null)
-                StopCoroutine(_resultClearCoroutine);
-            _resultClearCoroutine = StartCoroutine(ClearResultAfterDelay());
+            _milestoneImage.gameObject.SetActive(true);
+
+            // Phase 1: 右外から EaseOutBack でスライドイン (0.35s)
+            const float SlideDuration = 0.35f;
+            Vector2 offscreen = new Vector2(_milestoneOrigPos.x + 500f, _milestoneOrigPos.y);
+            float elapsed = 0f;
+
+            while (elapsed < SlideDuration)
+            {
+                elapsed += Time.deltaTime;
+                float t = Mathf.Clamp01(elapsed / SlideDuration);
+                float e = EaseOutBack(t);
+                _milestoneImage.rectTransform.anchoredPosition = Vector2.Lerp(offscreen, _milestoneOrigPos, e);
+                if (_milestoneText != null) _milestoneText.rectTransform.anchoredPosition = _milestoneImage.rectTransform.anchoredPosition;
+                yield return null;
+            }
+            _milestoneImage.rectTransform.anchoredPosition = _milestoneOrigPos;
+
+            // Phase 2: テキストフェードイン (0.2s)
+            if (_milestoneText != null)
+            {
+                elapsed = 0f;
+                const float FadeDuration = 0.2f;
+                while (elapsed < FadeDuration)
+                {
+                    elapsed += Time.deltaTime;
+                    SetTextAlpha(_milestoneText, Mathf.Clamp01(elapsed / FadeDuration));
+                    yield return null;
+                }
+                SetTextAlpha(_milestoneText, 1f);
+            }
+
+            // Phase 3: ホールド
+            yield return new WaitForSeconds(_milestoneDuration);
+
+            // Phase 4: 右へスライドアウト (0.25s)
+            elapsed = 0f;
+            const float ExitDuration = 0.25f;
+            Vector2 startPos = _milestoneOrigPos;
+
+            while (elapsed < ExitDuration)
+            {
+                elapsed += Time.deltaTime;
+                float t = Mathf.Clamp01(elapsed / ExitDuration);
+                float e = EaseInQuart(t);
+                Vector2 pos = Vector2.Lerp(startPos, offscreen, e);
+                _milestoneImage.rectTransform.anchoredPosition = pos;
+                if (_milestoneText != null) _milestoneText.rectTransform.anchoredPosition = pos;
+                yield return null;
+            }
+
+            _milestoneImage.gameObject.SetActive(false);
+            if (_milestoneText != null) _milestoneText.gameObject.SetActive(false);
+            _milestoneCoroutine = null;
         }
+
+        private static void SetTextAlpha(TextMeshProUGUI tmp, float alpha)
+        {
+            Color c = tmp.color;
+            c.a = alpha;
+            tmp.color = c;
+        }
+
+        private static float EaseOutBack(float t)
+        {
+            const float c1 = 1.70158f;
+            const float c3 = c1 + 1f;
+            return 1f + c3 * Mathf.Pow(t - 1f, 3f) + c1 * Mathf.Pow(t - 1f, 2f);
+        }
+
+        // ── ゲームオーバーオーバーレイ ──────────────────────────────────────
+
+        /// <summary>
+        /// HP0時にGameScreen上で呼ぶ。オーバーレイをフェードイン→ホールドして返る。
+        /// 返った後にGameManagerがScore画面へ遷移する。
+        /// </summary>
+        public IEnumerator PlayGameOverOverlay()
+        {
+            if (_gameOverOverlay == null) yield break;
+
+            _gameOverOverlay.alpha = 0f;
+            _gameOverOverlay.gameObject.SetActive(true);
+
+            float elapsed = 0f;
+            while (elapsed < _gameOverFadeInDuration)
+            {
+                elapsed += Time.deltaTime;
+                _gameOverOverlay.alpha = Mathf.Clamp01(elapsed / _gameOverFadeInDuration);
+                yield return null;
+            }
+            _gameOverOverlay.alpha = 1f;
+
+            yield return new WaitForSeconds(_gameOverHoldDuration);
+        }
+
+        // ── 結果アニメーション（パチンコ演出）──────────────────────────────
+
+        private IEnumerator ShowResultAnimation(Sprite judgeSprite)
+        {
+            if (_resultImage == null) yield break;
+
+            // 初期状態セット（上空から落下開始位置）
+            _resultImage.sprite = judgeSprite;
+            ApplyJudge(0f, new Vector2(_resultOrigPos.x, _resultOrigPos.y + 220f), -15f, 0f);
+            ApplyScore(0f, 0f);
+            _resultImage.gameObject.SetActive(true);
+            if (_scoreImage != null) _scoreImage.gameObject.SetActive(true);
+            if (_scoreNumberText != null) _scoreNumberText.gameObject.SetActive(true);
+
+            // AddDefeat() は OnCheersResolved の後に呼ばれるため、1フレーム待って正しい値を読む
+            yield return null;
+
+            if (_scoreNumberText != null)
+                _scoreNumberText.text = (_gameManager != null ? _gameManager.DefeatCount : 0).ToString();
+
+            // Phase 1: SLAM in (0.13s) — 上から高速落下＋回転
+            float elapsed = 0f;
+            const float SlamDuration = 0.13f;
+            Vector2 slamStart = new Vector2(_resultOrigPos.x, _resultOrigPos.y + 220f);
+
+            while (elapsed < SlamDuration)
+            {
+                elapsed += Time.deltaTime;
+                float t = Mathf.Clamp01(elapsed / SlamDuration);
+                float e = EaseOutQuart(t);
+
+                ApplyJudge(
+                    Mathf.Lerp(0f, 1.45f, e),
+                    Vector2.Lerp(slamStart, _resultOrigPos, e),
+                    Mathf.Lerp(-15f, 0f, e),
+                    Mathf.Clamp01(t * 6f));
+
+                // score は少し遅れて出現
+                float st = Mathf.Clamp01((t - 0.25f) / 0.75f);
+                ApplyScore(Mathf.Lerp(0f, 1.35f, EaseOutQuart(st)), Mathf.Clamp01(st * 5f));
+
+                yield return null;
+            }
+
+            // Phase 2: Spring settle (0.4s) — 減衰振動でバネっぽく落ち着く
+            elapsed = 0f;
+            const float SpringDuration = 0.4f;
+
+            while (elapsed < SpringDuration)
+            {
+                elapsed += Time.deltaTime;
+                float t = elapsed;
+
+                float judgeScale = 1f + 0.45f * Mathf.Exp(-9f  * t) * Mathf.Cos(22f * t);
+                float judgeRot   =       -8f * Mathf.Exp(-12f * t) * Mathf.Cos(18f * t);
+                float scoreScale = 1f + 0.35f * Mathf.Exp(-10f * t) * Mathf.Cos(20f * t);
+
+                ApplyJudge(judgeScale, _resultOrigPos, judgeRot, 1f);
+                ApplyScore(scoreScale, 1f);
+                yield return null;
+            }
+
+            ApplyJudge(1f, _resultOrigPos, 0f, 1f);
+            ApplyScore(1f, 1f);
+
+            // Phase 3: Hold
+            yield return new WaitForSeconds(_resultDisplayDuration);
+
+            // Phase 4: Exit — 素早くスケールアウト＋フェード (0.15s)
+            elapsed = 0f;
+            const float ExitDuration = 0.15f;
+
+            while (elapsed < ExitDuration)
+            {
+                elapsed += Time.deltaTime;
+                float t = Mathf.Clamp01(elapsed / ExitDuration);
+                float e = EaseInQuart(t);
+                ApplyJudge(Mathf.Lerp(1f, 0f, e), _resultOrigPos, 0f, 1f - t);
+                ApplyScore(Mathf.Lerp(1f, 0f, e), 1f - t);
+                yield return null;
+            }
+
+            _resultImage.gameObject.SetActive(false);
+            if (_scoreImage != null) _scoreImage.gameObject.SetActive(false);
+            if (_scoreNumberText != null) _scoreNumberText.gameObject.SetActive(false);
+            _resultCoroutine = null;
+        }
+
+        private void ApplyJudge(float scale, Vector2 pos, float rotDeg, float alpha)
+        {
+            if (_resultImage == null) return;
+            _resultImage.rectTransform.localScale        = Vector3.one * scale;
+            _resultImage.rectTransform.anchoredPosition  = pos;
+            _resultImage.rectTransform.localRotation     = Quaternion.Euler(0f, 0f, rotDeg);
+            Color c = _resultImage.color;
+            c.a = Mathf.Clamp01(alpha);
+            _resultImage.color = c;
+        }
+
+        private void ApplyScore(float scale, float alpha)
+        {
+            if (_scoreImage != null)
+            {
+                _scoreImage.rectTransform.localScale = Vector3.one * scale;
+                Color c = _scoreImage.color;
+                c.a = Mathf.Clamp01(alpha);
+                _scoreImage.color = c;
+            }
+
+            if (_scoreNumberText != null)
+            {
+                _scoreNumberText.rectTransform.localScale = Vector3.one * scale;
+                Color c = _scoreNumberText.color;
+                c.a = Mathf.Clamp01(alpha);
+                _scoreNumberText.color = c;
+            }
+        }
+
+        private Sprite GetJudgeSprite(float timingScore)
+        {
+            if (timingScore >= _thresholdIncredible) return _judgeIncredible;
+            if (timingScore >= _thresholdPerfect)    return _judgePerfect;
+            if (timingScore >= _thresholdGreat)      return _judgeGreat;
+            if (timingScore >= _thresholdGood)       return _judgeGood;
+            return _judgeBad;
+        }
+
+        private static float EaseOutQuart(float t) => 1f - Mathf.Pow(1f - t, 4f);
+        private static float EaseInQuart(float t)  => t * t * t * t;
 
         // ── タイミングガイドUI ──────────────────────────────────────────────
 
@@ -181,7 +468,12 @@ namespace CheersGame.UI
 
             ClearCountdown();
 
-            if (_resultText != null) _resultText.text = "";
+            if (_resultImage     != null) _resultImage.gameObject.SetActive(false);
+            if (_scoreImage      != null) _scoreImage.gameObject.SetActive(false);
+            if (_scoreNumberText != null) _scoreNumberText.gameObject.SetActive(false);
+            if (_gameOverOverlay != null) { _gameOverOverlay.alpha = 0f; _gameOverOverlay.gameObject.SetActive(false); }
+            if (_milestoneImage  != null) _milestoneImage.gameObject.SetActive(false);
+            _milestoneText?.gameObject.SetActive(false);
             if (_timingGuidePanel != null)
             {
                 _timingGuidePanel.SetActive(false);
@@ -227,14 +519,6 @@ namespace CheersGame.UI
         {
             if (_countdownText != null)
                 _countdownText.text = "";
-        }
-
-        private IEnumerator ClearResultAfterDelay()
-        {
-            yield return new WaitForSeconds(_resultDisplayDuration);
-            if (_resultText != null)
-                _resultText.text = "";
-            _resultClearCoroutine = null;
         }
     }
 }

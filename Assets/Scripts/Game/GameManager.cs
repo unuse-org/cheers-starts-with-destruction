@@ -1,7 +1,9 @@
 using System;
+using System.Collections;
 using UnityEngine;
 using CheersGame.Input;
 using CheersGame.Data;
+using CheersGame.UI;
 
 namespace CheersGame.Game
 {
@@ -44,14 +46,20 @@ namespace CheersGame.Game
         public event Action<NPCData> OnNPCChanged;
 
         private ISensorInput _sensorInput;
+        private TitleUI _titleUI;
+        private GameUI _gameUI;
+        private bool _isTransitioning;
 
         private void Awake()
         {
             _sensorInput = _sensorInputComponent as ISensorInput;
             if (_sensorInput == null)
-            {
                 Debug.LogError("[GameManager] SensorInputComponent does not implement ISensorInput.");
-            }
+
+            if (_titleScreen != null)
+                _titleUI = _titleScreen.GetComponent<TitleUI>();
+            if (_gameScreen != null)
+                _gameUI = _gameScreen.GetComponent<GameUI>();
         }
 
         private void OnEnable()
@@ -102,7 +110,8 @@ namespace CheersGame.Game
             switch (CurrentState)
             {
                 case GameState.Title:
-                    StartGame();
+                    if (!_isTransitioning)
+                        StartCoroutine(StartGameWithTransition());
                     break;
 
                 case GameState.Score:
@@ -114,9 +123,25 @@ namespace CheersGame.Game
         private void HandleGlassBroken()
         {
             if (CurrentState == GameState.Game)
-            {
-                TransitionTo(GameState.Score);
-            }
+                StartCoroutine(GameOverRoutine());
+        }
+
+        private IEnumerator GameOverRoutine()
+        {
+            if (_gameUI != null)
+                yield return _gameUI.PlayGameOverOverlay();
+            TransitionTo(GameState.Score);
+        }
+
+        private IEnumerator StartGameWithTransition()
+        {
+            _isTransitioning = true;
+            if (_titleUI != null)
+                yield return _titleUI.PlayStartAnimation();
+            // Screenの遷移時間
+            yield return new WaitForSeconds(1f);
+            _isTransitioning = false;
+            StartGame();
         }
 
         private void StartGame()
