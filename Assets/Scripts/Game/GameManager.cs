@@ -52,6 +52,7 @@ namespace CheersGame.Game
 
         private void Awake()
         {
+
             _sensorInput = _sensorInputComponent as ISensorInput;
             if (_sensorInput == null)
                 Debug.LogError("[GameManager] SensorInputComponent does not implement ISensorInput.");
@@ -91,6 +92,7 @@ namespace CheersGame.Game
         private void Start()
         {
             TransitionTo(GameState.Title);
+            FindObjectOfType<BGMManager>().ChangeBGM(BGMManager.GameState.Title);
         }
 
 #if UNITY_EDITOR
@@ -154,6 +156,9 @@ namespace CheersGame.Game
             }
 
             TransitionTo(GameState.Game);
+
+            //BGMManagerを探してBGM変更(ゲーム中BGMに変更)
+            // FindObjectOfType<BGMManager>().ChangeBGM(BGMManager.GameState.Main);
             SpawnNextNPC();
         }
 
@@ -203,6 +208,26 @@ namespace CheersGame.Game
             SetScreenActive(_titleScreen, newState == GameState.Title);
             SetScreenActive(_gameScreen, newState == GameState.Game);
             SetScreenActive(_scoreScreen, newState == GameState.Score);
+
+            // Debug.Log("BGM change to: " + newState);
+
+            //追加（BGM制御）
+            var bgm = FindObjectOfType<BGMManager>();
+            if (bgm != null)
+            {
+                switch (newState)
+                {
+                    case GameState.Title:
+                        bgm.ChangeBGM(BGMManager.GameState.Title);
+                        break;
+                    case GameState.Game:
+                        bgm.ChangeBGM(BGMManager.GameState.Game);
+                        break;
+                    case GameState.Score:
+                        bgm.ChangeBGM(BGMManager.GameState.Score);
+                        break;
+                }
+            }
 
             OnStateChanged?.Invoke(newState);
         }
