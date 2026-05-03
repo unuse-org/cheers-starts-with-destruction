@@ -14,6 +14,7 @@
  */
 
 using UnityEngine;
+using CheersGame.Input;
 
 public class DataReceiver : MonoBehaviour
 {
