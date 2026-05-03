@@ -92,7 +92,6 @@ namespace CheersGame.Game
         private void Start()
         {
             TransitionTo(GameState.Title);
-            FindObjectOfType<BGMManager>().ChangeBGM(BGMManager.GameState.Title);
         }
 
 #if UNITY_EDITOR
