@@ -32,19 +32,19 @@ namespace CheersGame.Feedback
 
         [Header("Screen Shake")]
         [Tooltip("Defeat / Victory 時の揺れ時間（秒）")]
-        [SerializeField] private float _shakeDurationSmall = 0.10f;
+        [SerializeField] private float _shakeDurationSmall = 0.5f;
         [Tooltip("Defeat / Victory 時の揺れ振幅（Unity 単位）")]
-        [SerializeField] private float _shakeAmplitudeSmall = 5f;
+        [SerializeField] private float _shakeAmplitudeSmall = 20f;
 
         [Tooltip("Draw 時の揺れ時間（秒）")]
-        [SerializeField] private float _shakeDurationMedium = 0.15f;
+        [SerializeField] private float _shakeDurationMedium = 0.3f;
         [Tooltip("Draw 時の揺れ振幅")]
-        [SerializeField] private float _shakeAmplitudeMedium = 1f;
+        [SerializeField] private float _shakeAmplitudeMedium = 5f;
 
         [Tooltip("SelfDestruct / グラス破壊時の揺れ時間（秒）")]
-        [SerializeField] private float _shakeDurationLarge = 0.30f;
+        [SerializeField] private float _shakeDurationLarge = 0.50f;
         [Tooltip("SelfDestruct / グラス破壊時の揺れ振幅")]
-        [SerializeField] private float _shakeAmplitudeLarge = 2.5f;
+        [SerializeField] private float _shakeAmplitudeLarge = 10f;
 
         private Vector3 _cameraOriginalLocalPosition;
         private Coroutine _shakeCoroutine;
@@ -104,31 +104,12 @@ namespace CheersGame.Feedback
             switch (result)
             {
                 case CheersResult.Victory:
-                    Debug.Log("[VF] Victory!");
                     PlayParticle(_npcGlassShardsParticle);
                     TriggerShake(_shakeDurationSmall, _shakeAmplitudeSmall);
-                    break;
-
-                case CheersResult.Draw:
-                    Debug.Log("[VF] Draw");
-                    PlayParticle(_npcGlassShardsParticle);
-                    PlayParticle(_playerGlassShardsParticle);
-                    TriggerShake(_shakeDurationMedium, _shakeAmplitudeMedium);
                     break;
 
                 case CheersResult.Defeat:
-                    Debug.Log("[VF] Defeat");
-                    TriggerShake(_shakeDurationSmall, _shakeAmplitudeSmall);
-                    break;
-
-                case CheersResult.SelfDestruct:
-                    Debug.Log("[VF] SelfDestruct");
-                    PlayParticle(_playerGlassShardsParticle);
-                    TriggerShake(_shakeDurationLarge, _shakeAmplitudeLarge);
-                    break;
-
-                case CheersResult.Whiff:
-                    Debug.Log("[VF] Whiff");
+                    TriggerShake(_shakeDurationMedium, _shakeAmplitudeMedium);
                     break;
             }
         }

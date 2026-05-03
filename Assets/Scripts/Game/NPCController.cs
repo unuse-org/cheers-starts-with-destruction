@@ -12,7 +12,7 @@ namespace CheersGame.Game
     public class NPCController : MonoBehaviour
     {
         [SerializeField] private float _countdownInterval = 1.0f;
-        [SerializeField] private bool _useCountdown = true;
+        [SerializeField] private bool _useCountdown = false;
         [SerializeField] private SpriteCharacterView _characterView;
 
         public NPCData NPCData { get; private set; }
