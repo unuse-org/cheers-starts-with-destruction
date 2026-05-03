@@ -222,6 +222,7 @@ namespace CheersGame.Game
                         break;
                     case GameState.Game:
                         bgm.ChangeBGM(BGMManager.GameState.Game);
+                        AudioFeedback.Instance.PlaySE(AudioFeedback.SEType.Start);
                         break;
                     case GameState.Score:
                         bgm.ChangeBGM(BGMManager.GameState.Score);
