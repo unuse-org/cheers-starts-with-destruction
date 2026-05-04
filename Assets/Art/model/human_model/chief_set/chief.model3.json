@@ -1,0 +1,39 @@
+{
+	"Version": 3,
+	"FileReferences": {
+		"Moc": "chief.moc3",
+		"Textures": [
+			"chief.2048/texture_00.png"
+		],
+		"DisplayInfo": "chief.cdi3.json",
+		"Motions": {
+			"": [
+				{
+					"File": "motion/chief_loseloop.motion3.json"
+				},
+				{
+					"File": "motion/chief_lose.motion3.json"
+				},
+				{
+					"File": "motion/chief_win.motion3.json"
+				},
+				{
+					"File": "motion/chief_cheers.motion3.json"
+				}
+			]
+		}
+	},
+	"Groups": [
+		{
+			"Target": "Parameter",
+			"Name": "EyeBlink",
+			"Ids": []
+		},
+		{
+			"Target": "Parameter",
+			"Name": "LipSync",
+			"Ids": []
+		}
+	],
+	"HitAreas": []
+}
