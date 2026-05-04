@@ -1,0 +1,36 @@
+{
+	"Version": 3,
+	"FileReferences": {
+		"Moc": "female.moc3",
+		"Textures": [
+			"female.2048/texture_00.png"
+		],
+		"DisplayInfo": "female.cdi3.json",
+		"Motions": {
+			"": [
+				{
+					"File": "motion/female_lose.motion3.json"
+				},
+				{
+					"File": "motion/female_cheers.motion3.json"
+				},
+				{
+					"File": "motion/female_win.motion3.json"
+				}
+			]
+		}
+	},
+	"Groups": [
+		{
+			"Target": "Parameter",
+			"Name": "EyeBlink",
+			"Ids": []
+		},
+		{
+			"Target": "Parameter",
+			"Name": "LipSync",
+			"Ids": []
+		}
+	],
+	"HitAreas": []
+}

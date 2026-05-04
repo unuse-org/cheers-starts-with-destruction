@@ -1,0 +1,36 @@
+{
+	"Version": 3,
+	"FileReferences": {
+		"Moc": "male.moc3",
+		"Textures": [
+			"male.2048/texture_00.png"
+		],
+		"DisplayInfo": "male.cdi3.json",
+		"Motions": {
+			"": [
+				{
+					"File": "motion/male_lose.motion3.json"
+				},
+				{
+					"File": "motion/male_cheers.motion3.json"
+				},
+				{
+					"File": "motion/male_win.motion3.json"
+				}
+			]
+		}
+	},
+	"Groups": [
+		{
+			"Target": "Parameter",
+			"Name": "EyeBlink",
+			"Ids": []
+		},
+		{
+			"Target": "Parameter",
+			"Name": "LipSync",
+			"Ids": []
+		}
+	],
+	"HitAreas": []
+}

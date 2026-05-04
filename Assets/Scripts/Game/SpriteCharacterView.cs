@@ -9,12 +9,22 @@ namespace CheersGame.Game
     /// </summary>
     public class SpriteCharacterView : MonoBehaviour, ICharacterView
     {
-        [SerializeField] private SpriteRenderer _spriteRenderer;
+        private GameObject _currentModel;
 
         public void Show(NPCData data)
         {
-            if (_spriteRenderer != null)
-                _spriteRenderer.sprite = data.FaceSprite;
+            // 前のモデル削除
+            if (_currentModel != null)
+            {
+                Destroy(_currentModel);
+                _currentModel = null;
+            }
+
+            // Live2Dモデル生成
+            if (data.ModelPrefab != null)
+            {
+                _currentModel = Instantiate(data.ModelPrefab, transform);
+            }
 
             gameObject.SetActive(true);
         }

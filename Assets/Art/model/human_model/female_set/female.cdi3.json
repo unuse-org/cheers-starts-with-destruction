@@ -1,0 +1,109 @@
+{
+	"Version": 3,
+	"Parameters": [
+		{
+			"Id": "ParamAngleX",
+			"GroupId": "",
+			"Name": "角度 X"
+		},
+		{
+			"Id": "ParamAngleY",
+			"GroupId": "",
+			"Name": "角度 Y"
+		},
+		{
+			"Id": "ParamAngleZ",
+			"GroupId": "",
+			"Name": "角度 Z"
+		},
+		{
+			"Id": "ParamSwingfront",
+			"GroupId": "",
+			"Name": "前髪の揺れ"
+		},
+		{
+			"Id": "ParamSwingside",
+			"GroupId": "",
+			"Name": "横髪の揺れ"
+		},
+		{
+			"Id": "ParamSwingpony",
+			"GroupId": "",
+			"Name": "ポニーテール"
+		},
+		{
+			"Id": "ParamMouthOpenY",
+			"GroupId": "",
+			"Name": "口　開閉"
+		},
+		{
+			"Id": "ParamBodyAngleY",
+			"GroupId": "",
+			"Name": "体の回転 Y"
+		},
+		{
+			"Id": "ParamBodyAngleZ",
+			"GroupId": "",
+			"Name": "体の回転 Z"
+		},
+		{
+			"Id": "ParamArmR",
+			"GroupId": "",
+			"Name": "右腕"
+		},
+		{
+			"Id": "ParamArmL",
+			"GroupId": "",
+			"Name": "左腕"
+		}
+	],
+	"ParameterGroups": [],
+	"Parts": [
+		{
+			"Id": "Part",
+			"Name": "髪"
+		},
+		{
+			"Id": "Part1",
+			"Name": "鼻"
+		},
+		{
+			"Id": "Part2",
+			"Name": "口"
+		},
+		{
+			"Id": "Part3",
+			"Name": "耳"
+		},
+		{
+			"Id": "Part4",
+			"Name": "顔"
+		},
+		{
+			"Id": "Part5",
+			"Name": "首"
+		},
+		{
+			"Id": "Part6",
+			"Name": "左腕"
+		},
+		{
+			"Id": "Part7",
+			"Name": "右腕"
+		},
+		{
+			"Id": "Part8",
+			"Name": "体"
+		},
+		{
+			"Id": "Part9",
+			"Name": "胴体"
+		}
+	],
+	"CombinedParameters": [
+		[
+			"ParamAngleX",
+			"ParamAngleY"
+		]
+	]
+}

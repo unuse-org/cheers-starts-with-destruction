@@ -1,0 +1,164 @@
+{
+	"Version": 3,
+	"Parameters": [
+		{
+			"Id": "ParamAngleX",
+			"GroupId": "",
+			"Name": "角度 X"
+		},
+		{
+			"Id": "ParamAngleY",
+			"GroupId": "",
+			"Name": "角度 Y"
+		},
+		{
+			"Id": "ParamAngleZ",
+			"GroupId": "",
+			"Name": "角度 Z"
+		},
+		{
+			"Id": "ParamEyeLOpen",
+			"GroupId": "",
+			"Name": "左目　開閉"
+		},
+		{
+			"Id": "ParamEyeROpen",
+			"GroupId": "",
+			"Name": "右目　開閉"
+		},
+		{
+			"Id": "ParamBrowLForm",
+			"GroupId": "",
+			"Name": "左眉　変形"
+		},
+		{
+			"Id": "ParamBrowRForm",
+			"GroupId": "",
+			"Name": "右眉　変形"
+		},
+		{
+			"Id": "ParamMouthOpenY",
+			"GroupId": "",
+			"Name": "口　開閉"
+		},
+		{
+			"Id": "ParamBodyAngleY",
+			"GroupId": "",
+			"Name": "体の回転 Y"
+		},
+		{
+			"Id": "ParamBodyAngleZ",
+			"GroupId": "",
+			"Name": "体の回転 Z"
+		},
+		{
+			"Id": "ParamArmR",
+			"GroupId": "",
+			"Name": "右腕"
+		},
+		{
+			"Id": "ParamArmL",
+			"GroupId": "",
+			"Name": "左腕"
+		},
+		{
+			"Id": "ParamEyePoint",
+			"GroupId": "",
+			"Name": "目が点"
+		},
+		{
+			"Id": "ParamGrassRotate",
+			"GroupId": "",
+			"Name": "メガネの回転"
+		}
+	],
+	"ParameterGroups": [],
+	"Parts": [
+		{
+			"Id": "Part",
+			"Name": "髪"
+		},
+		{
+			"Id": "Part21",
+			"Name": "眼鏡"
+		},
+		{
+			"Id": "Part2",
+			"Name": "まゆげ"
+		},
+		{
+			"Id": "Part5",
+			"Name": "目"
+		},
+		{
+			"Id": "Part10",
+			"Name": "鼻"
+		},
+		{
+			"Id": "Part12",
+			"Name": "口"
+		},
+		{
+			"Id": "Part14",
+			"Name": "耳"
+		},
+		{
+			"Id": "Part13",
+			"Name": "顔"
+		},
+		{
+			"Id": "Part15",
+			"Name": "首"
+		},
+		{
+			"Id": "Part16",
+			"Name": "左腕"
+		},
+		{
+			"Id": "Part17",
+			"Name": "右腕"
+		},
+		{
+			"Id": "Part18",
+			"Name": "体"
+		},
+		{
+			"Id": "Part3",
+			"Name": "左眉"
+		},
+		{
+			"Id": "Part4",
+			"Name": "右眉"
+		},
+		{
+			"Id": "Part6",
+			"Name": "左まつ毛"
+		},
+		{
+			"Id": "Part7",
+			"Name": "右まつ毛"
+		},
+		{
+			"Id": "Part8",
+			"Name": "左目玉"
+		},
+		{
+			"Id": "Part9",
+			"Name": "右目玉"
+		},
+		{
+			"Id": "Part19",
+			"Name": "ネクタイ"
+		},
+		{
+			"Id": "Part20",
+			"Name": "胴体"
+		}
+	],
+	"CombinedParameters": [
+		[
+			"ParamAngleX",
+			"ParamAngleY"
+		]
+	]
+}
