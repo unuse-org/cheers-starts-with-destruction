@@ -46,7 +46,7 @@ namespace CheersGame.Game
         [SerializeField] private float _maxTimingMultiplier = 1.5f;
 
         [Tooltip("結果表示後、次のNPCが登場するまでの待機時間（秒）")]
-        [SerializeField] private float _resultDisplayDuration = 5.5f;
+        [SerializeField] private float _resultDisplayDuration = 1.5f;
 
         [Header("Voice Bonus (Optional)")]
         [Tooltip("声の大きさによる攻撃ボーナスを使用するか")]
