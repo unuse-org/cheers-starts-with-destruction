@@ -46,7 +46,7 @@ namespace CheersGame.Game
         [SerializeField] private float _maxTimingMultiplier = 1.5f;
 
         [Tooltip("結果表示後、次のNPCが登場するまでの待機時間（秒）")]
-        [SerializeField] private float _resultDisplayDuration = 1.5f;
+        [SerializeField] private float _resultDisplayDuration = 5.5f;
 
         [Header("Voice Bonus (Optional)")]
         [Tooltip("声の大きさによる攻撃ボーナスを使用するか")]
@@ -96,11 +96,34 @@ namespace CheersGame.Game
                 _timingSystem.OnWindowExpired -= HandleWindowExpired;
         }
 
-        private void HandleCheersReady()
+        //アニメーター取得
+        private Animator GetCurrentAnimator()
         {
-            float reactionSpeed = _gameManager.CurrentNPC != null
-                ? _gameManager.CurrentNPC.ReactionSpeed : 1.0f;
-            _timingSystem.StartWindow(_baseWindowDuration / reactionSpeed);
+            if (_npcController == null)
+            {
+                Debug.Log("NPCController is NULL");
+                return null;
+            }
+
+            if (_npcController.CharacterView == null)
+            {
+                Debug.Log("CharacterView is NULL");
+                return null;
+            }
+
+            Animator animator =
+                _npcController.CharacterView.GetComponentInChildren<Animator>();
+
+            if (animator == null)
+            {
+                Debug.Log("Animator NOT FOUND");
+            }
+            else
+            {
+                Debug.Log("Animator FOUND : " + animator.name);
+            }
+
+            return animator;
         }
 
         private void HandleVoiceDetected(VoiceInputData data) => _lastVoiceData = data;
@@ -153,19 +176,40 @@ namespace CheersGame.Game
 
             if (_playerGlass.IsBroken) return;
 
+            Animator animator = GetCurrentAnimator();
+
             switch (result)
             {
                 case CheersResult.Victory:
+
+                    if (animator != null)
+                    {
+                        animator.Play("Victory");
+                    }
+
                     _gameManager.AddDefeat();
                     AudioFeedback.Instance.PlaySE(AudioFeedback.SEType.Break1);
                     StartCoroutine(SpawnNextNPCAfterDelay());
                     break;
 
                 case CheersResult.Defeat:
+
+                    if (animator != null)
+                    {
+                        animator.Play("Defeat");
+                    }
+
                     AudioFeedback.Instance.PlaySE(AudioFeedback.SEType.Break1);
                     _npcController.StartCheersSequence();
                     break;
             }
+        }
+        private void HandleCheersReady()
+        {
+            float reactionSpeed = _gameManager.CurrentNPC != null
+                ? _gameManager.CurrentNPC.ReactionSpeed : 1.0f;
+
+            _timingSystem.StartWindow(_baseWindowDuration / reactionSpeed);
         }
 
         private void LogHP(string context, int damage)

@@ -17,6 +17,8 @@ namespace CheersGame.Game
 
         public NPCData NPCData { get; private set; }
 
+        public SpriteCharacterView CharacterView => _characterView;
+
         /// <summary>カウントダウン完了時に発火</summary>
         public event Action OnCheersReady;
 

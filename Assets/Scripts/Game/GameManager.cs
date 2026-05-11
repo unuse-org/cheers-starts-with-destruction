@@ -140,7 +140,7 @@ namespace CheersGame.Game
             if (_titleUI != null)
                 yield return _titleUI.PlayStartAnimation();
             // Screenの遷移時間
-            yield return new WaitForSeconds(1f);
+            yield return new WaitForSeconds(2f);
             _isTransitioning = false;
             StartGame();
         }

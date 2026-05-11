@@ -3267,7 +3267,7 @@ MonoBehaviour:
   _battlePower: 100
   _baseWindowDuration: 2
   _maxTimingMultiplier: 1.5
-  _resultDisplayDuration: 1.5
+  _resultDisplayDuration: 5.5
   _useVoice: 0
   _voiceBonusScale: 0.5
 --- !u!4 &1661442351
