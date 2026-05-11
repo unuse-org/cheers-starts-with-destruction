@@ -96,11 +96,34 @@ namespace CheersGame.Game
                 _timingSystem.OnWindowExpired -= HandleWindowExpired;
         }
 
-        private void HandleCheersReady()
+        //アニメーター取得
+        private Animator GetCurrentAnimator()
         {
-            float reactionSpeed = _gameManager.CurrentNPC != null
-                ? _gameManager.CurrentNPC.ReactionSpeed : 1.0f;
-            _timingSystem.StartWindow(_baseWindowDuration / reactionSpeed);
+            if (_npcController == null)
+            {
+                Debug.Log("NPCController is NULL");
+                return null;
+            }
+
+            if (_npcController.CharacterView == null)
+            {
+                Debug.Log("CharacterView is NULL");
+                return null;
+            }
+
+            Animator animator =
+                _npcController.CharacterView.GetComponentInChildren<Animator>();
+
+            if (animator == null)
+            {
+                Debug.Log("Animator NOT FOUND");
+            }
+            else
+            {
+                Debug.Log($"Animator FOUND : {animator.name} / controller : {animator.runtimeAnimatorController?.name ?? "NULL"}");
+            }
+
+            return animator;
         }
 
         private void HandleVoiceDetected(VoiceInputData data) => _lastVoiceData = data;
@@ -136,11 +159,7 @@ namespace CheersGame.Game
             int damage = Mathf.RoundToInt(_battlePower);
             OnTimingJudged?.Invoke(0f);
             OnCheersResolved?.Invoke(CheersResult.Defeat);
-
-            _playerGlass.TakeDamage(damage);
-            LogHP("時間切れ", damage);
-            if (!_playerGlass.IsBroken)
-                _npcController.StartCheersSequence();
+            ResolveResult(CheersResult.Defeat, damage);
         }
 
         private void ResolveResult(CheersResult result, int damage)
@@ -153,19 +172,44 @@ namespace CheersGame.Game
 
             if (_playerGlass.IsBroken) return;
 
+            Animator animator = GetCurrentAnimator();
+            NPCData npc = _gameManager.CurrentNPC;
+
             switch (result)
             {
                 case CheersResult.Victory:
+                    TryPlayState(animator, npc?.AnimStateWin);
                     _gameManager.AddDefeat();
                     AudioFeedback.Instance.PlaySE(AudioFeedback.SEType.Break1);
                     StartCoroutine(SpawnNextNPCAfterDelay());
                     break;
 
                 case CheersResult.Defeat:
+                    TryPlayState(animator, npc?.AnimStateLose);
                     AudioFeedback.Instance.PlaySE(AudioFeedback.SEType.Break1);
-                    _npcController.StartCheersSequence();
+                    StartCoroutine(ContinueCheersAfterDelay());
                     break;
             }
+        }
+        private void HandleCheersReady()
+        {
+            NPCData npc = _gameManager.CurrentNPC;
+            Animator animator = GetCurrentAnimator();
+            TryPlayState(animator, npc?.AnimStateCheers);
+            float reactionSpeed = npc != null ? npc.ReactionSpeed : 1.0f;
+            _timingSystem.StartWindow(_baseWindowDuration / reactionSpeed);
+        }
+
+        private void TryPlayState(Animator animator, string stateName)
+        {
+            if (animator == null || string.IsNullOrEmpty(stateName)) return;
+            int hash = Animator.StringToHash(stateName);
+            if (!animator.HasState(0, hash))
+            {
+                Debug.LogWarning($"[BattleManager] state not found: '{stateName}' / controller: {animator.runtimeAnimatorController?.name ?? "NULL"}");
+                return;
+            }
+            animator.Play(stateName);
         }
 
         private void LogHP(string context, int damage)
@@ -179,6 +223,16 @@ namespace CheersGame.Game
         {
             yield return new WaitForSeconds(_resultDisplayDuration);
             _gameManager.SpawnNextNPC();
+        }
+
+        private IEnumerator ContinueCheersAfterDelay()
+        {
+            yield return new WaitForSeconds(_resultDisplayDuration);
+            if (_playerGlass.IsBroken) yield break;
+            Animator animator = GetCurrentAnimator();
+            NPCData npc = _gameManager.CurrentNPC;
+            TryPlayState(animator, npc?.AnimStateLoseLoop);
+            _npcController.StartCheersSequence();
         }
     }
 }
