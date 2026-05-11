@@ -20,5 +20,11 @@ namespace CheersGame.Data
 
         [Tooltip("反応速度（将来拡張用）")]
         public float ReactionSpeed = 1.0f;
+
+        [Header("Animation States")]
+        public string AnimStateCheers;
+        public string AnimStateWin;
+        public string AnimStateLose;
+        public string AnimStateLoseLoop;
     }
 }
