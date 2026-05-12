@@ -58,7 +58,6 @@ namespace CheersGame.Input
         public event Action<VoiceInputData> OnVoiceDetected;
 
         //　内部変数
-        private const string AUTO_DETECT_PREFIX = "/dev/tty.usbserial";
 
         private SerialPort    _port;
         private Thread        _readThread;
@@ -170,7 +169,11 @@ namespace CheersGame.Input
         // シリアルポート開閉
         private void OpenPort()
         {
+#if UNITY_EDITOR_OSX || UNITY_STANDALONE_OSX
+            var ports = new List<string>(System.IO.Directory.GetFiles("/dev", "cu.*"));
+#else
             var ports = new List<string>(SerialPort.GetPortNames());
+#endif
             Debug.Log("[RealSensorInput] Available ports: " + string.Join(", ", ports));
 
             string target = string.IsNullOrEmpty(portName) ? DetectPort(ports) : portName;
@@ -215,9 +218,10 @@ namespace CheersGame.Input
         /// <summary>/dev/tty.usbserial* の中から JSON が届くポートを自動検出する</summary>
         private string DetectPort(List<string> ports)
         {
+            // /dev/tty.usbserial -> /dev/cu.* に変わるケースやM5Stickの名前を考慮
             foreach (string p in ports)
             {
-                if (!p.StartsWith(AUTO_DETECT_PREFIX)) continue;
+                if (!p.Contains("usbserial") && !p.Contains("M5StickCPlus")) continue;
 
                 Debug.Log($"[RealSensorInput] Probing: {p}");
                 SerialPort probe = null;
