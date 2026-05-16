@@ -3039,9 +3039,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8d5437c1985e3462a80416d576f7ea40, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::BGMManager
-  titleBGM: {fileID: 8300000, guid: 5f9490f2016084fa78ec8da033146cc5, type: 3}
-  gameBGM: {fileID: 8300000, guid: 5f9490f2016084fa78ec8da033146cc5, type: 3}
-  scoreBGM: {fileID: 8300000, guid: 5f9490f2016084fa78ec8da033146cc5, type: 3}
+  titleBGM: {fileID: 8300000, guid: a38b8657737304358bbfe6776db36188, type: 3}
+  gameBGM: {fileID: 8300000, guid: a38b8657737304358bbfe6776db36188, type: 3}
+  scoreBGM: {fileID: 8300000, guid: a38b8657737304358bbfe6776db36188, type: 3}
 --- !u!4 &1581374569
 Transform:
   m_ObjectHideFlags: 0
