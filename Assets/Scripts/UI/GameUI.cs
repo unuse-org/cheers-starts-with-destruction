@@ -22,17 +22,17 @@ namespace CheersGame.UI
 
         [Header("Durability")]
         [SerializeField] private Slider _durabilitySlider;
-        [SerializeField] private TextMeshProUGUI _durabilityText;
+        [SerializeField] private CompoundNumberDisplay _durabilityDisplay;
 
         [Header("Game Info")]
-        [SerializeField] private TextMeshProUGUI _defeatCountText;
+        [SerializeField] private CompoundNumberDisplay _defeatCountDisplay;
         [SerializeField] private TextMeshProUGUI _glassNameText;
 
         [Header("NPC Info")]
         [SerializeField] private TextMeshProUGUI _npcNameText;
 
         [Header("Countdown")]
-        [SerializeField] private TextMeshProUGUI _countdownText;
+        [SerializeField] private ImageNumberDisplay _countdownDisplay;
 
         [Header("Timing Guide")]
         [Tooltip("タイミングガイド全体のパネル。ウィンドウ開閉に合わせて表示/非表示する。")]
@@ -47,8 +47,8 @@ namespace CheersGame.UI
         [Header("Milestone Banner")]
         [Tooltip("score_upper.png を表示する Image（右上に配置）")]
         [SerializeField] private Image _milestoneImage;
-        [Tooltip("\"XX人抜き達成！！\" を表示するテキスト")]
-        [SerializeField] private TextMeshProUGUI _milestoneText;
+        [Tooltip("撃破数を表示する画像ベース数字表示")]
+        [SerializeField] private ImageNumberDisplay _milestoneDisplay;
         [Tooltip("バナーを表示し続ける秒数")]
         [SerializeField] private float _milestoneDuration = 2f;
         [Tooltip("5 の倍数ごとに発火（変更可能）")]
@@ -65,8 +65,8 @@ namespace CheersGame.UI
         [Header("Result")]
         [SerializeField] private Image _resultImage;
         [SerializeField] private Image _scoreImage;
-        [Tooltip("score.png の左に並べる撃破数テキスト（数字のみ表示）")]
-        [SerializeField] private TextMeshProUGUI _scoreNumberText;
+        [Tooltip("score.png の左に並べる撃破数（画像ベース数字表示）")]
+        [SerializeField] private ImageNumberDisplay _scoreNumberDisplay;
         [Tooltip("結果画像を表示する秒数")]
         [SerializeField] private float _resultDisplayDuration = 1.5f;
 
@@ -88,16 +88,33 @@ namespace CheersGame.UI
         private Coroutine _resultCoroutine;
         private bool _timingGuideVisible;
         private Vector2 _resultOrigPos;
-        private Vector2 _scoreOrigPos;
+        private Vector3 _resultOrigScale = Vector3.one;
+        private Vector3 _scoreOrigScale = Vector3.one;
+        private Vector3 _scoreNumberOrigScale = Vector3.one;
         private float _lastTimingScore;
+        private RectTransform _milestoneRoot;
         private Vector2 _milestoneOrigPos;
         private Coroutine _milestoneCoroutine;
 
         private void Start()
         {
-            if (_resultImage   != null) _resultOrigPos   = _resultImage.rectTransform.anchoredPosition;
-            if (_scoreImage    != null) _scoreOrigPos    = _scoreImage.rectTransform.anchoredPosition;
-            if (_milestoneImage != null) _milestoneOrigPos = _milestoneImage.rectTransform.anchoredPosition;
+            if (_resultImage != null)
+            {
+                _resultOrigPos = _resultImage.rectTransform.anchoredPosition;
+                _resultOrigScale = _resultImage.rectTransform.localScale;
+            }
+            if (_scoreImage != null)
+                _scoreOrigScale = _scoreImage.rectTransform.localScale;
+            if (_scoreNumberDisplay != null)
+                _scoreNumberOrigScale = _scoreNumberDisplay.transform.localScale;
+            if (_milestoneImage != null)
+            {
+                _milestoneRoot = _milestoneImage.rectTransform.parent as RectTransform;
+                if (_milestoneRoot == null)
+                    _milestoneRoot = _milestoneImage.rectTransform;
+
+                _milestoneOrigPos = _milestoneRoot.anchoredPosition;
+            }
         }
 
         private void OnEnable()
@@ -176,8 +193,17 @@ namespace CheersGame.UI
 
         private void HandleCountdownTick(int count)
         {
-            if (_countdownText == null) return;
-            _countdownText.text = count == 0 ? "" : count.ToString();
+            if (_countdownDisplay == null) return;
+
+            if (count == 0)
+            {
+                _countdownDisplay.gameObject.SetActive(false);
+            }
+            else
+            {
+                _countdownDisplay.gameObject.SetActive(true);
+                _countdownDisplay.SetNumber(count);
+            }
         }
 
         private void HandleTimingJudged(float score) => _lastTimingScore = score;
@@ -199,11 +225,11 @@ namespace CheersGame.UI
         {
             if (_milestoneImage == null) yield break;
 
-            if (_milestoneText != null)
+            if (_milestoneDisplay != null)
             {
-                _milestoneText.text = $"{count}";
-                _milestoneText.gameObject.SetActive(true);
-                SetTextAlpha(_milestoneText, 0f);
+                _milestoneDisplay.SetNumber(count);
+                _milestoneDisplay.gameObject.SetActive(true);
+                _milestoneDisplay.SetAlpha(0f);
             }
 
             _milestoneImage.gameObject.SetActive(true);
@@ -218,24 +244,23 @@ namespace CheersGame.UI
                 elapsed += Time.deltaTime;
                 float t = Mathf.Clamp01(elapsed / SlideDuration);
                 float e = EaseOutBack(t);
-                _milestoneImage.rectTransform.anchoredPosition = Vector2.Lerp(offscreen, _milestoneOrigPos, e);
-                if (_milestoneText != null) _milestoneText.rectTransform.anchoredPosition = _milestoneImage.rectTransform.anchoredPosition;
+                _milestoneRoot.anchoredPosition = Vector2.Lerp(offscreen, _milestoneOrigPos, e);
                 yield return null;
             }
-            _milestoneImage.rectTransform.anchoredPosition = _milestoneOrigPos;
+            _milestoneRoot.anchoredPosition = _milestoneOrigPos;
 
-            // Phase 2: テキストフェードイン (0.2s)
-            if (_milestoneText != null)
+            // Phase 2: 数字フェードイン (0.2s)
+            if (_milestoneDisplay != null)
             {
                 elapsed = 0f;
                 const float FadeDuration = 0.2f;
                 while (elapsed < FadeDuration)
                 {
                     elapsed += Time.deltaTime;
-                    SetTextAlpha(_milestoneText, Mathf.Clamp01(elapsed / FadeDuration));
+                    _milestoneDisplay.SetAlpha(Mathf.Clamp01(elapsed / FadeDuration));
                     yield return null;
                 }
-                SetTextAlpha(_milestoneText, 1f);
+                _milestoneDisplay.SetAlpha(1f);
             }
 
             // Phase 3: ホールド
@@ -252,21 +277,13 @@ namespace CheersGame.UI
                 float t = Mathf.Clamp01(elapsed / ExitDuration);
                 float e = EaseInQuart(t);
                 Vector2 pos = Vector2.Lerp(startPos, offscreen, e);
-                _milestoneImage.rectTransform.anchoredPosition = pos;
-                if (_milestoneText != null) _milestoneText.rectTransform.anchoredPosition = pos;
+                _milestoneRoot.anchoredPosition = pos;
                 yield return null;
             }
 
             _milestoneImage.gameObject.SetActive(false);
-            if (_milestoneText != null) _milestoneText.gameObject.SetActive(false);
+            if (_milestoneDisplay != null) _milestoneDisplay.gameObject.SetActive(false);
             _milestoneCoroutine = null;
-        }
-
-        private static void SetTextAlpha(TextMeshProUGUI tmp, float alpha)
-        {
-            Color c = tmp.color;
-            c.a = alpha;
-            tmp.color = c;
         }
 
         private static float EaseOutBack(float t)
@@ -313,13 +330,13 @@ namespace CheersGame.UI
             ApplyScore(0f, 0f);
             _resultImage.gameObject.SetActive(true);
             if (_scoreImage != null) _scoreImage.gameObject.SetActive(true);
-            if (_scoreNumberText != null) _scoreNumberText.gameObject.SetActive(true);
+            if (_scoreNumberDisplay != null) _scoreNumberDisplay.gameObject.SetActive(true);
 
             // AddDefeat() は OnCheersResolved の後に呼ばれるため、1フレーム待って正しい値を読む
             yield return null;
 
-            if (_scoreNumberText != null)
-                _scoreNumberText.text = (_gameManager != null ? _gameManager.DefeatCount : 0).ToString();
+            if (_scoreNumberDisplay != null)
+                _scoreNumberDisplay.SetNumber(_gameManager != null ? _gameManager.DefeatCount : 0);
 
             // Phase 1: SLAM in (0.13s) — 上から高速落下＋回転
             float elapsed = 0f;
@@ -385,14 +402,14 @@ namespace CheersGame.UI
 
             _resultImage.gameObject.SetActive(false);
             if (_scoreImage != null) _scoreImage.gameObject.SetActive(false);
-            if (_scoreNumberText != null) _scoreNumberText.gameObject.SetActive(false);
+            if (_scoreNumberDisplay != null) _scoreNumberDisplay.gameObject.SetActive(false);
             _resultCoroutine = null;
         }
 
         private void ApplyJudge(float scale, Vector2 pos, float rotDeg, float alpha)
         {
             if (_resultImage == null) return;
-            _resultImage.rectTransform.localScale        = Vector3.one * scale;
+            _resultImage.rectTransform.localScale        = _resultOrigScale * scale;
             _resultImage.rectTransform.anchoredPosition  = pos;
             _resultImage.rectTransform.localRotation     = Quaternion.Euler(0f, 0f, rotDeg);
             Color c = _resultImage.color;
@@ -404,18 +421,16 @@ namespace CheersGame.UI
         {
             if (_scoreImage != null)
             {
-                _scoreImage.rectTransform.localScale = Vector3.one * scale;
+                _scoreImage.rectTransform.localScale = _scoreOrigScale * scale;
                 Color c = _scoreImage.color;
                 c.a = Mathf.Clamp01(alpha);
                 _scoreImage.color = c;
             }
 
-            if (_scoreNumberText != null)
+            if (_scoreNumberDisplay != null)
             {
-                _scoreNumberText.rectTransform.localScale = Vector3.one * scale;
-                Color c = _scoreNumberText.color;
-                c.a = Mathf.Clamp01(alpha);
-                _scoreNumberText.color = c;
+                _scoreNumberDisplay.transform.localScale = _scoreNumberOrigScale * scale * 2f; // 数字は少し大きめに出す
+                _scoreNumberDisplay.SetAlpha(alpha);
             }
         }
 
@@ -468,12 +483,12 @@ namespace CheersGame.UI
 
             ClearCountdown();
 
-            if (_resultImage     != null) _resultImage.gameObject.SetActive(false);
-            if (_scoreImage      != null) _scoreImage.gameObject.SetActive(false);
-            if (_scoreNumberText != null) _scoreNumberText.gameObject.SetActive(false);
+            if (_resultImage       != null) _resultImage.gameObject.SetActive(false);
+            if (_scoreImage        != null) _scoreImage.gameObject.SetActive(false);
+            if (_scoreNumberDisplay != null) _scoreNumberDisplay.gameObject.SetActive(false);
             if (_gameOverOverlay != null) { _gameOverOverlay.alpha = 0f; _gameOverOverlay.gameObject.SetActive(false); }
             if (_milestoneImage  != null) _milestoneImage.gameObject.SetActive(false);
-            _milestoneText?.gameObject.SetActive(false);
+            if (_milestoneDisplay != null) _milestoneDisplay.gameObject.SetActive(false);
             if (_timingGuidePanel != null)
             {
                 _timingGuidePanel.SetActive(false);
@@ -493,14 +508,14 @@ namespace CheersGame.UI
                 _durabilitySlider.value = currentDurability;
             }
 
-            if (_durabilityText != null)
-                _durabilityText.text = $"{currentDurability} / {max}";
+            if (_durabilityDisplay != null)
+                _durabilityDisplay.SetDurability(currentDurability, max);
         }
 
         private void UpdateDefeatCount(int defeatCount)
         {
-            if (_defeatCountText != null)
-                _defeatCountText.text = $"撃破: {defeatCount}";
+            if (_defeatCountDisplay != null)
+                _defeatCountDisplay.SetDefeatCount(defeatCount);
         }
 
         private void UpdateGlassName(string glassName)
@@ -517,8 +532,8 @@ namespace CheersGame.UI
 
         private void ClearCountdown()
         {
-            if (_countdownText != null)
-                _countdownText.text = "";
+            if (_countdownDisplay != null)
+                _countdownDisplay.gameObject.SetActive(false);
         }
     }
 }

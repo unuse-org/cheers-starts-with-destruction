@@ -18,8 +18,5 @@ namespace CheersGame.Data
         [Header("Battle Parameters")]
         [Tooltip("被ダメージ倍率（1.0 = 通常）")]
         public float DamageMultiplier = 1.0f;
-
-        [Tooltip("与ダメージ倍率（1.0 = 通常）")]
-        public float AttackMultiplier = 1.0f;
     }
 }

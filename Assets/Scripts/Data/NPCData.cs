@@ -15,9 +15,6 @@ namespace CheersGame.Data
         public GameObject ModelPrefab;
 
         [Header("Battle Parameters")]
-        [Tooltip("防御閾値 — この値以上のダメージでないとNPCに効かない")]
-        public float DefenseThreshold = 50f;
-
         [Tooltip("反応速度（将来拡張用）")]
         public float ReactionSpeed = 1.0f;
 

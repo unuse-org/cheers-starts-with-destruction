@@ -14,12 +14,6 @@ namespace CheersGame.Game
         [Tooltip("判定ウィンドウの総時間（秒）")]
         [SerializeField] private float _windowDuration = 2.0f;
 
-        [Tooltip("Perfect ゾーン帯の半径（秒）— UI表示用")]
-        [SerializeField] private float _perfectRadius = 0.15f;
-
-        [Tooltip("Great ゾーン帯の半径（秒）— UI表示用")]
-        [SerializeField] private float _greatRadius = 0.35f;
-
         [Tooltip("Good ゾーン帯の半径（秒）— この範囲外はスコア 0")]
         [SerializeField] private float _goodRadius = 0.6f;
 

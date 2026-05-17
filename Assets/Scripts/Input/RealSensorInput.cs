@@ -22,7 +22,7 @@ namespace CheersGame.Input
 
     /// <summary>
     /// ISensorInput の実センサー実装。
-    /// M5StickC Plus2 からシリアルでデータを受信し、乾杯・音声イベントを発火する。
+    /// M5StickC Plus2 からシリアルでデータを受信し、乾杯イベントを発火する。
     /// </summary>
     public class RealSensorInput : MonoBehaviour, ISensorInput
     {
@@ -36,26 +36,11 @@ namespace CheersGame.Input
         [Tooltip("乾杯と判定する加速度変化速度の閾値 [m/s²/s]  推奨: 3〜8")]
         public float cheersVelocityThreshold = 5.0f;
 
-        [Header("音声検出（スタブ）")]
-        [Tooltip("Inspector からテスト発火する場合はチェックを入れる（1フレームで自動解除）")]
-        public bool triggerVoiceStub = false;
-
-        [Tooltip("スタブ発火時の音量値 (0.0〜1.0)")]
-        [Range(0f, 1f)]
-        public float stubVoiceVolume = 0.8f;
-
-        // TODO: 音量正規化の基準値。センサー仕様確定後に調整すること
-        [Tooltip("音量正規化の基準値（生値のこの値を 1.0 とみなす）※実装時に調整")]
-        public float voiceNormalizeMax = 1000f;
-
         [Header("デバッグ")]
         public bool showLog = true;
 
         /// <summary>乾杯アクションが検出されたときに発火</summary>
         public event Action<CheersInputData> OnCheersDetected;
-
-        /// <summary>音声入力が検出されたときに発火（現在スタブ）</summary>
-        public event Action<VoiceInputData> OnVoiceDetected;
 
         //　内部変数
 
@@ -78,12 +63,6 @@ namespace CheersGame.Input
 
         void Update()
         {
-            if (triggerVoiceStub)
-            {
-                triggerVoiceStub = false;
-                FireVoiceStub(stubVoiceVolume);
-            }
-
             // ---- キューを毎フレーム処理（メインスレッド） ----
             while (true)
             {
@@ -148,22 +127,6 @@ namespace CheersGame.Input
             }
 
             _prevData[id] = (raw.x, raw.y, raw.z, now);
-        }
-
-        /// <summary>
-        /// Inspector または外部スクリプトから OnVoiceDetected をテスト発火する。
-        /// </summary>
-        /// <param name="volume">0.0〜1.0 の正規化音量</param>
-        public void FireVoiceStub(float volume)
-        {
-            OnVoiceDetected?.Invoke(new VoiceInputData
-            {
-                Volume    = Mathf.Clamp01(volume),
-                Timestamp = Time.realtimeSinceStartup
-            });
-
-            if (showLog)
-                Debug.Log($"[RealSensorInput] [STUB] Voice fired  vol:{Mathf.Clamp01(volume):F2}");
         }
 
         // シリアルポート開閉
