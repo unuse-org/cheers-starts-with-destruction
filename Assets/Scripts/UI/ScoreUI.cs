@@ -28,8 +28,8 @@ namespace CheersGame.UI
         [SerializeField] private int _goodThreshold = 2;
 
         [Header("Text Elements")]
-        [Tooltip("撃破数を数字のみで表示するテキスト（結果画像の上に重ねる）")]
-        [SerializeField] private TextMeshProUGUI _scoreNumberText;
+        [Tooltip("撃破数を画像で表示（結果画像の上に重ねる）")]
+        [SerializeField] private ImageNumberDisplay _scoreNumberDisplay;
         [SerializeField] private TextMeshProUGUI _instructionText;
 
         [Header("Animation")]
@@ -74,11 +74,11 @@ namespace CheersGame.UI
                 _resultImage.gameObject.SetActive(true);
             }
 
-            // テキストは最初非表示
-            if (_scoreNumberText != null)
+            // 数字表示は最初非表示
+            if (_scoreNumberDisplay != null)
             {
-                _scoreNumberText.text = count.ToString();
-                _scoreNumberText.gameObject.SetActive(false);
+                _scoreNumberDisplay.SetNumber(count);
+                _scoreNumberDisplay.gameObject.SetActive(false);
             }
             if (_instructionText != null)
             {
@@ -102,10 +102,10 @@ namespace CheersGame.UI
             yield return new WaitForSeconds(0.15f);
 
             // Phase 2: 撃破数ポップイン（バネ振動）
-            if (_scoreNumberText != null)
+            if (_scoreNumberDisplay != null)
             {
-                _scoreNumberText.gameObject.SetActive(true);
-                yield return SpringPopIn(_scoreNumberText.rectTransform);
+                _scoreNumberDisplay.gameObject.SetActive(true);
+                yield return SpringPopIn(_scoreNumberDisplay.transform as RectTransform);
             }
 
             yield return new WaitForSeconds(0.3f);
