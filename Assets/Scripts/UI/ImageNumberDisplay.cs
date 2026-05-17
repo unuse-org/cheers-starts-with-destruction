@@ -104,14 +104,6 @@ namespace CheersGame.UI
         }
 
         /// <summary>
-        /// すべての桁のスケールを設定する（親のlocalScaleを変更）。
-        /// </summary>
-        public void SetScale(float scale)
-        {
-            transform.localScale = Vector3.one * scale;
-        }
-
-        /// <summary>
         /// 指定された桁数分のImageを確保する。
         /// 不足している場合は新しく生成し、余っている場合は非表示にする。
         /// </summary>

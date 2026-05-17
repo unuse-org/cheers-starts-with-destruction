@@ -88,7 +88,9 @@ namespace CheersGame.UI
         private Coroutine _resultCoroutine;
         private bool _timingGuideVisible;
         private Vector2 _resultOrigPos;
-        private Vector2 _scoreOrigPos;
+        private Vector3 _resultOrigScale = Vector3.one;
+        private Vector3 _scoreOrigScale = Vector3.one;
+        private Vector3 _scoreNumberOrigScale = Vector3.one;
         private float _lastTimingScore;
         private RectTransform _milestoneRoot;
         private Vector2 _milestoneOrigPos;
@@ -96,8 +98,15 @@ namespace CheersGame.UI
 
         private void Start()
         {
-            if (_resultImage   != null) _resultOrigPos   = _resultImage.rectTransform.anchoredPosition;
-            if (_scoreImage    != null) _scoreOrigPos    = _scoreImage.rectTransform.anchoredPosition;
+            if (_resultImage != null)
+            {
+                _resultOrigPos = _resultImage.rectTransform.anchoredPosition;
+                _resultOrigScale = _resultImage.rectTransform.localScale;
+            }
+            if (_scoreImage != null)
+                _scoreOrigScale = _scoreImage.rectTransform.localScale;
+            if (_scoreNumberDisplay != null)
+                _scoreNumberOrigScale = _scoreNumberDisplay.transform.localScale;
             if (_milestoneImage != null)
             {
                 _milestoneRoot = _milestoneImage.rectTransform.parent as RectTransform;
@@ -277,13 +286,6 @@ namespace CheersGame.UI
             _milestoneCoroutine = null;
         }
 
-        private static void SetTextAlpha(TextMeshProUGUI tmp, float alpha)
-        {
-            Color c = tmp.color;
-            c.a = alpha;
-            tmp.color = c;
-        }
-
         private static float EaseOutBack(float t)
         {
             const float c1 = 1.70158f;
@@ -407,7 +409,7 @@ namespace CheersGame.UI
         private void ApplyJudge(float scale, Vector2 pos, float rotDeg, float alpha)
         {
             if (_resultImage == null) return;
-            _resultImage.rectTransform.localScale        = Vector3.one * scale;
+            _resultImage.rectTransform.localScale        = _resultOrigScale * scale;
             _resultImage.rectTransform.anchoredPosition  = pos;
             _resultImage.rectTransform.localRotation     = Quaternion.Euler(0f, 0f, rotDeg);
             Color c = _resultImage.color;
@@ -419,7 +421,7 @@ namespace CheersGame.UI
         {
             if (_scoreImage != null)
             {
-                _scoreImage.rectTransform.localScale = Vector3.one * scale;
+                _scoreImage.rectTransform.localScale = _scoreOrigScale * scale;
                 Color c = _scoreImage.color;
                 c.a = Mathf.Clamp01(alpha);
                 _scoreImage.color = c;
@@ -427,7 +429,7 @@ namespace CheersGame.UI
 
             if (_scoreNumberDisplay != null)
             {
-                _scoreNumberDisplay.transform.localScale = Vector3.one * scale * 2f; // 数字は少し大きめに出す
+                _scoreNumberDisplay.transform.localScale = _scoreNumberOrigScale * scale * 2f; // 数字は少し大きめに出す
                 _scoreNumberDisplay.SetAlpha(alpha);
             }
         }

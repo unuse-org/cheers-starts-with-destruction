@@ -932,7 +932,7 @@ RectTransform:
   m_GameObject: {fileID: 390601530}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 5, y: 5, z: 5}
+  m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 1
   m_Children: []
   m_Father: {fileID: 1441991660}
@@ -2200,7 +2200,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 75d420517b2c64f06b7cd278d65f891b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::CheersGame.Input.MockSensorInput
-  _simulatedVolume: 0.5
 --- !u!4 &1030815646
 Transform:
   m_ObjectHideFlags: 0
@@ -2851,9 +2850,6 @@ MonoBehaviour:
   portName: 
   baudRate: 115200
   cheersVelocityThreshold: 5
-  triggerVoiceStub: 0
-  stubVoiceVolume: 0.8
-  voiceNormalizeMax: 1000
   showLog: 1
 --- !u!4 &1507574720
 Transform:
@@ -4055,8 +4051,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::CheersGame.Game.TimingSystem
   _windowDuration: 1
-  _perfectRadius: 0.15
-  _greatRadius: 0.35
   _goodRadius: 0.6
 --- !u!4 &2126727516
 Transform:

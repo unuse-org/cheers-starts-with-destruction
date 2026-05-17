@@ -100,12 +100,5 @@ namespace CheersGame.UI
                 _secondNumberDisplay.SetAlpha(alpha);
         }
 
-        /// <summary>
-        /// すべての要素のスケールを設定する。
-        /// </summary>
-        public void SetScale(float scale)
-        {
-            transform.localScale = Vector3.one * scale;
-        }
     }
 }

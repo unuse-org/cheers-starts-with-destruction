@@ -12,11 +12,6 @@ namespace CheersGame.Input
         /// 乾杯アクション（ジョッキを振る動作）が検出されたときに発火
         /// </summary>
         event Action<CheersInputData> OnCheersDetected;
-
-        /// <summary>
-        /// 音声入力が検出されたときに発火
-        /// </summary>
-        event Action<VoiceInputData> OnVoiceDetected;
     }
 
     /// <summary>
@@ -34,15 +29,4 @@ namespace CheersGame.Input
         public float Timestamp;
     }
 
-    /// <summary>
-    /// 音声入力データ
-    /// </summary>
-    public struct VoiceInputData
-    {
-        /// <summary>音量（0.0〜1.0の正規化値）</summary>
-        public float Volume;
-
-        /// <summary>検出時刻</summary>
-        public float Timestamp;
-    }
 }
