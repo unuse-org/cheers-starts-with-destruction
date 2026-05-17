@@ -140,7 +140,16 @@ namespace CheersGame.Game
             if (_titleUI != null)
                 yield return _titleUI.PlayStartAnimation();
             // Screenの遷移時間
-            yield return new WaitForSeconds(2f);
+            if (CurrentState == GameState.Title)
+            {
+                AudioFeedback.Instance.PlaySE(AudioFeedback.SEType.Start);
+                yield return new WaitForSeconds(3f); 
+            }
+            else
+            {
+                yield return new WaitForSeconds(2f);
+            }
+            
             _isTransitioning = false;
             StartGame();
         }
@@ -221,7 +230,6 @@ namespace CheersGame.Game
                         break;
                     case GameState.Game:
                         bgm.ChangeBGM(BGMManager.GameState.Game);
-                        AudioFeedback.Instance.PlaySE(AudioFeedback.SEType.Start);
                         break;
                     case GameState.Score:
                         bgm.ChangeBGM(BGMManager.GameState.Score);
