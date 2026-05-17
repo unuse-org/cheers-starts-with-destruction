@@ -1275,7 +1275,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f652c556ce2ed49c3905e774ac00aec4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::CheersGame.Game.NPCController
-  _countdownInterval: 1
+  _countdownDuration: 2
   _useCountdown: 1
   _characterView: {fileID: 1343346766}
 --- !u!4 &420397276
@@ -1598,7 +1598,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!114 &586433958
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1669,7 +1669,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 150, y: 200}
+  m_AnchoredPosition: {x: -469, y: 797}
   m_SizeDelta: {x: 160, y: 20}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!1 &609896117
@@ -1849,13 +1849,13 @@ RectTransform:
   m_GameObject: {fileID: 810019083}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 1, y: 4, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1620093093}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 0, y: 1}
+  m_AnchorMax: {x: 0, y: 0}
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 10, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
@@ -1872,7 +1872,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Image
   m_Material: {fileID: 0}
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_Color: {r: 0, g: 1, b: 0, a: 1}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
@@ -2577,7 +2577,7 @@ MonoBehaviour:
   m_fontColor32:
     serializedVersion: 2
     rgba: 4278190080
-  m_fontColor: {r: 0, g: 0, b: 0, a: 1}
+  m_fontColor: {r: 1, g: 1, b: 1, a: 1}
   m_enableVertexGradient: 0
   m_colorMode: 3
   m_fontColorGradient:
@@ -2761,7 +2761,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &1442295450
 RectTransform:
   m_ObjectHideFlags: 0
@@ -2777,7 +2777,7 @@ RectTransform:
   m_Father: {fileID: 1711562014}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 0, y: 1}
+  m_AnchorMax: {x: 0, y: 0}
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 20, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
@@ -2802,15 +2802,15 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Image
   m_Material: {fileID: 0}
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_Color: {r: 0, g: 1, b: 0, a: 1}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 10913, guid: 0000000000000000f000000000000000, type: 0}
-  m_Type: 0
+  m_Sprite: {fileID: 0}
+  m_Type: 1
   m_PreserveAspect: 0
   m_FillCenter: 1
   m_FillMethod: 4
@@ -3085,12 +3085,15 @@ MonoBehaviour:
   _playerGlass: {fileID: 1012565733}
   _timingSystem: {fileID: 2126727515}
   _sensorInputComponent: {fileID: 1030815645}
-  _battlePower: 100
-  _baseWindowDuration: 1
-  _maxTimingMultiplier: 1.5
+  _maxDamagePerCheers: 50
+  _defeatDamageThreshold: 20
+  _baseWindowDuration: 1.4
+  _defeatsPerDifficultyStep: 3
+  _windowDurationDecreasePerStep: 0.15
+  _minWindowDuration: 0.75
+  _windowRandomnessPerStep: 0.1
+  _maxWindowRandomness: 0.5
   _resultDisplayDuration: 2.5
-  _useVoice: 0
-  _voiceBonusScale: 0.5
 --- !u!4 &1661442351
 Transform:
   m_ObjectHideFlags: 0
@@ -3822,7 +3825,7 @@ RectTransform:
   m_GameObject: {fileID: 1966928829}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 1, y: 4, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 586433959}
@@ -3845,7 +3848,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Image
   m_Material: {fileID: 0}
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_Color: {r: 1, g: 0, b: 0, a: 1}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
@@ -3916,9 +3919,11 @@ MonoBehaviour:
   m_GameObject: {fileID: 2021066327}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: a677bdebba042482abc7e25ccbf1ae3e, type: 3}
+  m_Script: {fileID: 11500000, guid: 66718a3e3ceb438aa3c918f840bb52d1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::CheersGame.UI.ImageNumberDisplay
+  _settings: {fileID: 11400000, guid: 100775f2c21fd467b8d7a7f2c3fb0b85, type: 2}
+  _digitPrefab: {fileID: 0}
 --- !u!114 &2021066330
 MonoBehaviour:
   m_ObjectHideFlags: 0

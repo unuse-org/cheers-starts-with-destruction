@@ -11,7 +11,9 @@ namespace CheersGame.Game
     /// </summary>
     public class NPCController : MonoBehaviour
     {
-        [SerializeField] private float _countdownInterval = 1.0f;
+        [Tooltip("3, 2, 1 のカウントダウン全体にかける実時間（秒）。")]
+        [SerializeField] private float _countdownDuration = 3.0f;
+
         [SerializeField] private bool _useCountdown = false;
         [SerializeField] private SpriteCharacterView _characterView;
 
@@ -76,11 +78,13 @@ namespace CheersGame.Game
 
         private IEnumerator CountdownCoroutine()
         {
+            float interval = Mathf.Max(0f, _countdownDuration) / 3f;
+
             for (int i = 3; i >= 1; i--)
             {
                 Debug.Log($"[NPCController] Countdown: {i}");
                 OnCountdownTick?.Invoke(i);
-                yield return new WaitForSeconds(_countdownInterval);
+                yield return new WaitForSecondsRealtime(interval);
             }
 
             Debug.Log("[NPCController] 乾杯!");
