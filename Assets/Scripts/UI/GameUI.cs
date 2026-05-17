@@ -90,6 +90,7 @@ namespace CheersGame.UI
         private Vector2 _resultOrigPos;
         private Vector2 _scoreOrigPos;
         private float _lastTimingScore;
+        private RectTransform _milestoneRoot;
         private Vector2 _milestoneOrigPos;
         private Coroutine _milestoneCoroutine;
 
@@ -97,7 +98,14 @@ namespace CheersGame.UI
         {
             if (_resultImage   != null) _resultOrigPos   = _resultImage.rectTransform.anchoredPosition;
             if (_scoreImage    != null) _scoreOrigPos    = _scoreImage.rectTransform.anchoredPosition;
-            if (_milestoneImage != null) _milestoneOrigPos = _milestoneImage.rectTransform.anchoredPosition;
+            if (_milestoneImage != null)
+            {
+                _milestoneRoot = _milestoneImage.rectTransform.parent as RectTransform;
+                if (_milestoneRoot == null)
+                    _milestoneRoot = _milestoneImage.rectTransform;
+
+                _milestoneOrigPos = _milestoneRoot.anchoredPosition;
+            }
         }
 
         private void OnEnable()
@@ -227,11 +235,10 @@ namespace CheersGame.UI
                 elapsed += Time.deltaTime;
                 float t = Mathf.Clamp01(elapsed / SlideDuration);
                 float e = EaseOutBack(t);
-                _milestoneImage.rectTransform.anchoredPosition = Vector2.Lerp(offscreen, _milestoneOrigPos, e);
-                if (_milestoneDisplay != null) _milestoneDisplay.transform.position = _milestoneImage.transform.position;
+                _milestoneRoot.anchoredPosition = Vector2.Lerp(offscreen, _milestoneOrigPos, e);
                 yield return null;
             }
-            _milestoneImage.rectTransform.anchoredPosition = _milestoneOrigPos;
+            _milestoneRoot.anchoredPosition = _milestoneOrigPos;
 
             // Phase 2: 数字フェードイン (0.2s)
             if (_milestoneDisplay != null)
@@ -261,8 +268,7 @@ namespace CheersGame.UI
                 float t = Mathf.Clamp01(elapsed / ExitDuration);
                 float e = EaseInQuart(t);
                 Vector2 pos = Vector2.Lerp(startPos, offscreen, e);
-                _milestoneImage.rectTransform.anchoredPosition = pos;
-                if (_milestoneDisplay != null) _milestoneDisplay.transform.position = _milestoneImage.transform.position;
+                _milestoneRoot.anchoredPosition = pos;
                 yield return null;
             }
 
@@ -421,7 +427,7 @@ namespace CheersGame.UI
 
             if (_scoreNumberDisplay != null)
             {
-                _scoreNumberDisplay.transform.localScale = Vector3.one * scale;
+                _scoreNumberDisplay.transform.localScale = Vector3.one * scale * 2f; // 数字は少し大きめに出す
                 _scoreNumberDisplay.SetAlpha(alpha);
             }
         }
