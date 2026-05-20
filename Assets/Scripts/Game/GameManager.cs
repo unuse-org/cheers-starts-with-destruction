@@ -49,6 +49,7 @@ namespace CheersGame.Game
         private TitleUI _titleUI;
         private GameUI _gameUI;
         private bool _isTransitioning;
+        private bool _ignoreSensorInput;
 
         private void Awake()
         {
@@ -108,6 +109,13 @@ namespace CheersGame.Game
 
         private void HandleCheersInput(CheersInputData data)
         {
+            // 一時的に入力無効
+            if (_ignoreSensorInput)
+            {
+                Debug.Log("[Input] センサー入力無効中");
+                return;
+            }
+
             switch (CurrentState)
             {
                 case GameState.Title:
@@ -133,23 +141,33 @@ namespace CheersGame.Game
                 yield return _gameUI.PlayGameOverOverlay();
             TransitionTo(GameState.Score);
         }
-
         private IEnumerator StartGameWithTransition()
         {
+            Debug.Log($"開始時 State : {CurrentState}");
+
             _isTransitioning = true;
+
             if (_titleUI != null)
                 yield return _titleUI.PlayStartAnimation();
-            // Screenの遷移時間
-            if (CurrentState == GameState.Title)
+
+            if (CurrentState == GameState.Title || CurrentState == GameState.Score)
             {
+                Debug.Log("3秒待機");
                 AudioFeedback.Instance.PlaySE(AudioFeedback.SEType.Start);
-                yield return new WaitForSeconds(3f); 
+
+                yield return new WaitForSeconds(3f);
+
+                Debug.Log("3秒待機終了");
             }
             else
             {
+                Debug.Log("2秒待機");
+
                 yield return new WaitForSeconds(2f);
             }
-            
+
+            Debug.Log("StartGame 実行");
+
             _isTransitioning = false;
             StartGame();
         }
@@ -217,9 +235,12 @@ namespace CheersGame.Game
             SetScreenActive(_gameScreen, newState == GameState.Game);
             SetScreenActive(_scoreScreen, newState == GameState.Score);
 
-            // Debug.Log("BGM change to: " + newState);
+            // Title遷移直後は入力を一定時間無効化
+            if (newState == GameState.Title)
+            {
+                StartCoroutine(DisableSensorTemporarily());
+            }
 
-            //追加（BGM制御）
             var bgm = FindObjectOfType<BGMManager>();
             if (bgm != null)
             {
@@ -238,6 +259,18 @@ namespace CheersGame.Game
             }
 
             OnStateChanged?.Invoke(newState);
+        }
+        private IEnumerator DisableSensorTemporarily()
+        {
+            _ignoreSensorInput = true;
+
+            Debug.Log("[Input] センサー入力無効開始");
+
+            yield return new WaitForSeconds(3f);
+
+            _ignoreSensorInput = false;
+
+            Debug.Log("[Input] センサー入力有効");
         }
 
         private static void SetScreenActive(GameObject screen, bool active)

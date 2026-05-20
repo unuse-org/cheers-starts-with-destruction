@@ -2850,7 +2850,7 @@ MonoBehaviour:
   portName: 
   baudRate: 115200
   cheersVelocityThreshold: 5
-  showLog: 1
+  showLog: 0
 --- !u!4 &1507574720
 Transform:
   m_ObjectHideFlags: 0
