@@ -3423,8 +3423,8 @@ MonoBehaviour:
   StartSE: {fileID: 8300000, guid: 9019856cc5f464211b93036f72945f24, type: 3}
   Break1SE: {fileID: 8300000, guid: 2a6b786f9322a479683874e2cd6b3ba1, type: 3}
   Break2SE: {fileID: 8300000, guid: 2a6b786f9322a479683874e2cd6b3ba1, type: 3}
-  Break3SE: {fileID: 8300000, guid: 2a6b786f9322a479683874e2cd6b3ba1, type: 3}
-  Break4SE: {fileID: 8300000, guid: 2a6b786f9322a479683874e2cd6b3ba1, type: 3}
+  defeatSE: {fileID: 8300000, guid: 5b103777df9ba4839b23b7f90cb2c16d, type: 3}
+  GameOverSE: {fileID: 8300000, guid: 66e6cfc4b5c0b4086bdf59d4fc1eaf93, type: 3}
 --- !u!1 &1792083525
 GameObject:
   m_ObjectHideFlags: 0
