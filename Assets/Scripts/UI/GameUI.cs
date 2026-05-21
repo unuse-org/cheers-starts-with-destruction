@@ -9,7 +9,7 @@ namespace CheersGame.UI
 {
     /// <summary>
     /// ゲーム画面のUI制御。
-    /// 耐久値バー・撃破数・グラス名・カウントダウン・タイミングガイド・結果表示を担当する。
+    /// 耐久値表示・撃破数・グラス名・カウントダウン・タイミングガイド・結果表示を担当する。
     /// </summary>
     public class GameUI : MonoBehaviour
     {
@@ -23,6 +23,10 @@ namespace CheersGame.UI
         [Header("Durability")]
         [SerializeField] private Slider _durabilitySlider;
         [SerializeField] private CompoundNumberDisplay _durabilityDisplay;
+        [Tooltip("HPの残量に応じてジョッキ画像を切り替えるImage。")]
+        [SerializeField] private Image _durabilityImage;
+        [Tooltip("残HPが多い順に並べる。0:最大、3:壊れかけ。")]
+        [SerializeField] private Sprite[] _durabilitySprites;
 
         [Header("Game Info")]
         [SerializeField] private CompoundNumberDisplay _defeatCountDisplay;
@@ -510,6 +514,34 @@ namespace CheersGame.UI
 
             if (_durabilityDisplay != null)
                 _durabilityDisplay.SetDurability(currentDurability, max);
+
+            UpdateDurabilityImage(currentDurability, max);
+        }
+
+        private void UpdateDurabilityImage(int currentDurability, int maxDurability)
+        {
+            if (_durabilityImage == null || _durabilitySprites == null || _durabilitySprites.Length == 0)
+                return;
+
+            float ratio = maxDurability > 0
+                ? Mathf.Clamp01((float)currentDurability / maxDurability)
+                : 0f;
+
+            int index;
+            if (ratio > 0.75f)
+                index = 0;
+            else if (ratio > 0.5f)
+                index = 1;
+            else if (ratio > 0.25f)
+                index = 2;
+            else
+                index = 3;
+
+            index = Mathf.Clamp(index, 0, _durabilitySprites.Length - 1);
+            Sprite sprite = _durabilitySprites[index];
+            if (sprite == null) return;
+
+            _durabilityImage.sprite = sprite;
         }
 
         private void UpdateDefeatCount(int defeatCount)
