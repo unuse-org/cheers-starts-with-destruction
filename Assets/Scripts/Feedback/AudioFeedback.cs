@@ -7,16 +7,16 @@ public class AudioFeedback : MonoBehaviour
         Start,
         Break1,
         Break2,
-        Break3,
-        Break4
+        defeat,
+        GameOver
     }
 
     [Header("SE Clips")]
     [SerializeField] private AudioClip StartSE;
     [SerializeField] private AudioClip Break1SE;
     [SerializeField] private AudioClip Break2SE;
-    [SerializeField] private AudioClip Break3SE;
-    [SerializeField] private AudioClip Break4SE;
+    [SerializeField] private AudioClip defeatSE;
+    [SerializeField] private AudioClip GameOverSE;
 
     private AudioSource audioSource;
 
@@ -60,10 +60,10 @@ public class AudioFeedback : MonoBehaviour
                 return Break1SE;
             case SEType.Break2:
                 return Break2SE;
-            case SEType.Break3:
-                return Break3SE;
-            case SEType.Break4:
-                return Break4SE;
+            case SEType.defeat:
+                return defeatSE;
+            case SEType.GameOver:
+                return GameOverSE;
         }
         return null;
     }
