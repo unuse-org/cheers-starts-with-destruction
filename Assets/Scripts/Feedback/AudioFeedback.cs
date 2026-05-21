@@ -54,9 +54,19 @@ public class AudioFeedback : MonoBehaviour
 
     public float PlayVoice(SEType type)
     {
-        AudioClip clip = type == SEType.CheersVoice
+        AudioClip clip = GetVoiceClip(type);
+        return PlayVoiceClip(clip, type);
+    }
+
+    public AudioClip GetVoiceClip(SEType type)
+    {
+        return type == SEType.CheersVoice
             ? GetRandomCheersVoiceClip()
             : GetClip(type);
+    }
+
+    public float PlayVoiceClip(AudioClip clip, SEType type)
+    {
 
         if (clip == null)
         {

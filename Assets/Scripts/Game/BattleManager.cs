@@ -72,7 +72,15 @@ namespace CheersGame.Game
         public event Action<CheersResult> OnCheersResolved;
 
         private ISensorInput _sensorInput;
-        private Coroutine _cheersReadyCoroutine;
+        private Coroutine _cheersVoiceCoroutine;
+        private bool _cheersVoiceScheduledForSequence;
+        private bool _cheersVoicePlayedForSequence;
+        private bool _hasPlannedWindowDuration;
+        private int _plannedDifficultyStep;
+        private float _plannedBaseDuration;
+        private float _plannedRandomOffset;
+        private float _plannedReactionSpeed;
+        private float _plannedWindowDuration;
 
         private void Awake()
         {
@@ -88,7 +96,10 @@ namespace CheersGame.Game
                 _sensorInput.OnCheersDetected += HandleCheersDetected;
             }
             if (_npcController != null)
+            {
                 _npcController.OnCheersReady += HandleCheersReady;
+                _npcController.OnCheersVoiceLeadStarted += HandleCheersVoiceLeadStarted;
+            }
             if (_timingSystem != null)
                 _timingSystem.OnWindowExpired += HandleWindowExpired;
         }
@@ -100,15 +111,14 @@ namespace CheersGame.Game
                 _sensorInput.OnCheersDetected -= HandleCheersDetected;
             }
             if (_npcController != null)
+            {
                 _npcController.OnCheersReady -= HandleCheersReady;
+                _npcController.OnCheersVoiceLeadStarted -= HandleCheersVoiceLeadStarted;
+            }
             if (_timingSystem != null)
                 _timingSystem.OnWindowExpired -= HandleWindowExpired;
 
-            if (_cheersReadyCoroutine != null)
-            {
-                StopCoroutine(_cheersReadyCoroutine);
-                _cheersReadyCoroutine = null;
-            }
+            StopCheersVoiceCoroutine();
         }
 
         //アニメーター取得
@@ -214,44 +224,92 @@ namespace CheersGame.Game
         }
         private void HandleCheersReady()
         {
-            if (_cheersReadyCoroutine != null)
-                StopCoroutine(_cheersReadyCoroutine);
-
-            _cheersReadyCoroutine = StartCoroutine(HandleCheersReadyCoroutine());
-        }
-
-        private IEnumerator HandleCheersReadyCoroutine()
-        {
             NPCData npc = _gameManager.CurrentNPC;
             Animator animator = GetCurrentAnimator();
             TryPlayState(animator, npc?.AnimStateCheers);
-            float reactionSpeed = Mathf.Max(0.01f, npc != null ? npc.ReactionSpeed : 1.0f);
-            int difficultyStep = GetDifficultyStep();
-            float randomOffset;
-            float baseDuration = GetCurrentBaseWindowDuration(difficultyStep, out randomOffset);
-            float duration = baseDuration / reactionSpeed;
+            float duration = GetPlannedWindowDuration();
 
-            Debug.Log($"[Difficulty] defeats={_gameManager.DefeatCount} step={difficultyStep} baseWindow={baseDuration:F2}s random={randomOffset:+0.00;-0.00;0.00}s reaction={reactionSpeed:F2} actualWindow={duration:F2}s");
+            Debug.Log($"[Difficulty] defeats={_gameManager.DefeatCount} step={_plannedDifficultyStep} baseWindow={_plannedBaseDuration:F2}s random={_plannedRandomOffset:+0.00;-0.00;0.00}s reaction={_plannedReactionSpeed:F2} actualWindow={duration:F2}s");
 
-            float voiceLength = AudioFeedback.Instance != null
-                ? AudioFeedback.Instance.PlayVoice(AudioFeedback.SEType.CheersVoice)
-                : 0f;
-            float delayUntilWindow = Mathf.Max(0f, voiceLength - duration * 0.5f);
+            if (!_cheersVoicePlayedForSequence && !_cheersVoiceScheduledForSequence && AudioFeedback.Instance != null)
+                AudioFeedback.Instance.PlayVoice(AudioFeedback.SEType.CheersVoice);
 
-            if (delayUntilWindow > 0f)
+            _timingSystem.StartWindow(duration);
+            _hasPlannedWindowDuration = false;
+            _cheersVoiceScheduledForSequence = false;
+            _cheersVoicePlayedForSequence = false;
+        }
+
+        private void HandleCheersVoiceLeadStarted(float leadTime)
+        {
+            StopCheersVoiceCoroutine();
+            _cheersVoicePlayedForSequence = false;
+            _hasPlannedWindowDuration = false;
+
+            if (AudioFeedback.Instance == null) return;
+
+            AudioClip voiceClip = AudioFeedback.Instance.GetVoiceClip(AudioFeedback.SEType.CheersVoice);
+            if (voiceClip == null) return;
+
+            float windowDuration = GetPlannedWindowDuration();
+            float bestOffset = windowDuration * 0.5f;
+            float delay = Mathf.Clamp(leadTime + bestOffset - voiceClip.length, 0f, Mathf.Max(0f, leadTime));
+
+            if (delay <= 0f)
             {
-                Debug.Log($"[BattleManager] Cheers voice sync. voice={voiceLength:F2}s delay={delayUntilWindow:F2}s best={duration * 0.5f:F2}s after window start");
-                yield return new WaitForSeconds(delayUntilWindow);
+                float voiceLength = AudioFeedback.Instance.PlayVoiceClip(voiceClip, AudioFeedback.SEType.CheersVoice);
+                _cheersVoicePlayedForSequence = voiceLength > 0f;
+                Debug.Log($"[BattleManager] Cheers voice during countdown. voice={voiceLength:F2}s lead={leadTime:F2}s delay=0.00s best={bestOffset:F2}s after window start");
+                return;
             }
+
+            _cheersVoiceScheduledForSequence = true;
+            _cheersVoiceCoroutine = StartCoroutine(PlayCheersVoiceAfterDelay(voiceClip, delay, leadTime, bestOffset));
+        }
+
+        private IEnumerator PlayCheersVoiceAfterDelay(AudioClip voiceClip, float delay, float leadTime, float bestOffset)
+        {
+            if (delay > 0f)
+                yield return new WaitForSecondsRealtime(delay);
 
             if (_gameManager == null || _gameManager.CurrentState != GameState.Game)
             {
-                _cheersReadyCoroutine = null;
+                _cheersVoiceCoroutine = null;
                 yield break;
             }
 
-            _timingSystem.StartWindow(duration);
-            _cheersReadyCoroutine = null;
+            float voiceLength = AudioFeedback.Instance != null
+                ? AudioFeedback.Instance.PlayVoiceClip(voiceClip, AudioFeedback.SEType.CheersVoice)
+                : 0f;
+
+            _cheersVoiceScheduledForSequence = false;
+            _cheersVoicePlayedForSequence = voiceLength > 0f;
+            Debug.Log($"[BattleManager] Cheers voice during countdown. voice={voiceLength:F2}s lead={leadTime:F2}s delay={delay:F2}s best={bestOffset:F2}s after window start");
+            _cheersVoiceCoroutine = null;
+        }
+
+        private void StopCheersVoiceCoroutine()
+        {
+            if (_cheersVoiceCoroutine == null) return;
+
+            StopCoroutine(_cheersVoiceCoroutine);
+            _cheersVoiceCoroutine = null;
+            _cheersVoiceScheduledForSequence = false;
+        }
+
+        private float GetPlannedWindowDuration()
+        {
+            if (_hasPlannedWindowDuration)
+                return _plannedWindowDuration;
+
+            NPCData npc = _gameManager != null ? _gameManager.CurrentNPC : null;
+            _plannedReactionSpeed = Mathf.Max(0.01f, npc != null ? npc.ReactionSpeed : 1.0f);
+            _plannedDifficultyStep = GetDifficultyStep();
+            _plannedBaseDuration = GetCurrentBaseWindowDuration(_plannedDifficultyStep, out _plannedRandomOffset);
+            _plannedWindowDuration = _plannedBaseDuration / _plannedReactionSpeed;
+            _hasPlannedWindowDuration = true;
+
+            return _plannedWindowDuration;
         }
 
         private int GetDifficultyStep()
