@@ -1,59 +1,70 @@
 # タスク管理 - 乾杯の音頭は破壊から
 
-## 現在のフェーズ: Phase 1 - コア実装
+## 現在のフェーズ: Phase 3 - 演出・統合
 
 ---
 
 ## Phase 1: コア実装
 
 ### 入力システム
-- [ ] `ISensorInput` インターフェース定義
-- [ ] `CheersInputData`, `VoiceInputData` 構造体定義
-- [ ] `MockSensorInput` 実装（キーボード入力でテスト可能に）
+- [x] `ISensorInput` インターフェース定義
+- [x] `CheersInputData`, `VoiceInputData` 構造体定義
+- [x] `MockSensorInput` 実装（キーボード入力でテスト可能に）
 
 ### グラスシステム
-- [ ] `GlassData` ScriptableObject定義
-- [ ] `PlayerGlass` 実装（耐久値管理）
-- [ ] ビールジョッキのデータアセット作成
+- [x] `GlassData` ScriptableObject定義
+- [x] `PlayerGlass` 実装（耐久値管理）
+- [x] ビールジョッキのデータアセット作成（Unity Editor上で作成が必要）
 
 ### ゲームフロー
-- [ ] `GameManager` 実装（状態遷移管理）
-- [ ] シーン構成（Title, Game, Score）
-- [ ] 基本的な画面遷移
+- [x] `GameManager` 実装（状態遷移管理）
+- [x] シーン構成（Title, Game, Score）← シングルシーン＋UIパネル切り替え方式を採用
+- [x] 基本的な画面遷移
 
 ### 仮UI
-- [ ] `TitleUI` 実装
-- [ ] `GameUI` 実装（耐久値表示、撃破数表示）
-- [ ] `ScoreUI` 実装
+- [x] `TitleUI` 実装
+- [x] `GameUI` 実装（耐久値表示、撃破数表示）
+- [x] `ScoreUI` 実装
+
+### 日本語フォント
+- [x] Noto Sans JP フォントファイル配置（`Assets/Fonts/`）
+- [x] 日本語文字リスト作成（`Assets/Fonts/japanese_characters.txt`）
+- [x] Font Asset 生成（Unity Editor で手動作業）
+- [x] TMP Settings デフォルトフォント変更（Unity Editor で手動作業）
 
 ---
 
 ## Phase 2: バトル実装
 
 ### NPCシステム
-- [ ] `NPCData` ScriptableObject定義
-- [ ] `NPCController` 実装
-- [ ] NPC3種類のデータアセット作成（仮パラメータ）
+- [x] `NPCData` ScriptableObject定義
+- [x] `NPCController` 実装（カウントダウン・中断対応）
+- [x] `GameManager` にNPC生成ロジック追加（SpawnNextNPC, OnNPCChanged）
+- [x] `GameUI` にNPC名表示追加
+- [x] NPC3種類のデータアセット作成（Unity Editor手動作業 ↓参照）
 
 ### タイミングシステム
-- [ ] `TimingSystem` 実装
-- [ ] タイミングガイドUI実装
-- [ ] `TimingGrade` 判定ロジック
+- [x] `TimingSystem` 実装
+- [x] タイミングガイドUI実装（`GameUI` に追加）
+- [x] タイミング判定：連続スコア方式に変更（`GetTimingScore()` 0〜1）
+- [x] UI変更：左右ジョッキ衝突方式（`_leftGlassRect` / `_rightGlassRect`）
+- [ ] Unity Editor：ジョッキ画像UIオブジェクト作成・インスペクター設定（↓参照）
 
 ### 乾杯判定
-- [ ] `BattleManager` 実装
-- [ ] 攻撃力計算（タイミング × 声量）
-- [ ] 勝敗判定ロジック
-- [ ] ダメージ処理
+- [x] `BattleManager` 実装
+- [x] 攻撃力計算（タイミング × 声量）
+- [x] 勝敗判定ロジック
+- [x] ダメージ処理
 
 ---
 
 ## Phase 3: 演出・統合
 
 ### 視覚フィードバック
-- [ ] `VisualFeedback` 実装
-- [ ] ガラス破片パーティクル
-- [ ] 画面揺れ演出
+- [x] `VisualFeedback` 実装（イベント駆動、既存クラス変更なし）
+- [x] 画面揺れ演出（結果別3段階: Small/Medium/Large）
+- [x] ひび割れオーバーレイ（耐久値に連動した赤フィルター）
+- [ ] ガラス破片パーティクル（ParticleSystem を Editor で作成・配線）
 
 ### 音声フィードバック
 - [ ] `AudioFeedback` 実装
@@ -81,4 +92,73 @@
 
 ## レビュー・メモ
 
-（各フェーズ完了時のレビューや気づきを記載）
+### タイミングシステム・バトル実装（Phase 2）
+
+**Unity Editor 手動作業:**
+
+1. **シーン内に `BattleManager` GameObjectを追加:**
+   - Inspector で以下を設定:
+     - `Game Manager` → GameManager
+     - `Npc Controller` → NPCController
+     - `Player Glass` → PlayerGlass
+     - `Timing System` → TimingSystem（新規追加GameObjectに）
+     - `Sensor Input Component` → MockSensorInput
+
+2. **シーン内に `TimingSystem` GameObjectを追加:**（BattleManagerと同じかサブオブジェクトでもOK）
+
+3. **`GameUI` の Inspector に追加フィールドを設定:**
+   - `Npc Controller` → NPCController
+   - `Battle Manager` → BattleManager
+   - `Timing System` → TimingSystem
+   - `Countdown Text` → カウントダウン表示用 TextMeshProUGUI
+   - `Timing Guide Panel` → タイミングガイド全体のパネル
+   - `Left Glass Rect` → 左ジョッキ Image の RectTransform
+   - `Right Glass Rect` → 右ジョッキ Image の RectTransform
+   - `Glass Start Offset` → 500（画面幅に応じて調整）
+   - `Result Text` → 結果表示用 TextMeshProUGUI
+   - ~~`Timing Bar Rect`~~、~~`Timing Indicator`~~ → 削除済み
+
+4. **タイミングガイドUI構成（LeftGlass / RightGlass の作成）:**
+   ```
+   TimingGuidePanel (GameObject)
+   ├── LeftGlass  (Image, ジョッキスプライト)
+   └── RightGlass (Image, ジョッキスプライト, flipX=true)
+   ```
+
+**検証チェックリスト:**
+- [ ] Unity でコンパイルエラーがないこと
+- [ ] Play モードで 3, 2, 1, 乾杯! の後 Space キーで乾杯判定が走ること
+- [ ] ログに `Score=0.xx, Result=Victory/...` が出ること
+- [ ] 左右ジョッキが中央に向かって移動することを確認
+- [ ] 撃破でNPCが切り替わること（撃破数が増えること）
+- [ ] Defeat/SelfDestructでカウントダウンが再スタートすること
+- [ ] 耐久値0でスコア画面に遷移すること
+
+
+
+### NPCシステム実装（Phase 2）
+
+**Unity Editor 手動作業（Step 5）:**
+
+1. **データアセット作成** — `Assets/Data/` で右クリック → Create → CheersGame → NPCData を3回実行:
+
+   | アセット名 | NPCName | DefenseThreshold | ReactionSpeed |
+   |-----------|---------|-----------------|---------------|
+   | NPCData_Easy | 酔っ払い | 30 | 0.8 |
+   | NPCData_Normal | サラリーマン | 60 | 1.0 |
+   | NPCData_Hard | 居酒屋の主 | 90 | 1.3 |
+
+2. **シーン配線:**
+   - シーン内の適切なGameObjectに `NPCController` コンポーネントを追加
+   - `GameManager` の Inspector で:
+     - `Npc Controller` に NPCController の参照を設定
+     - `Npc Data List` に上記3つのアセットを設定
+   - `GameUI` の Inspector で:
+     - `Npc Name Text` にNPC名表示用の TextMeshProUGUI を設定
+
+**検証チェックリスト:**
+- [x] Unity でコンパイルエラーがないこと
+- [x] Play モードで Game 状態遷移時に `[GameManager] Spawned NPC: <名前>` がログに出ること
+- [x] カウントダウンログ（3, 2, 1, 乾杯!）が順に出ること
+- [x] GameUI に NPC名が表示されること
+- [x] タイトルに戻ってもエラーが出ないこと（カウントダウン中断の確認）

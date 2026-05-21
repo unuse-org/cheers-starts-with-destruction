@@ -1,0 +1,39 @@
+{
+	"Version": 3,
+	"FileReferences": {
+		"Moc": "president.moc3",
+		"Textures": [
+			"president.2048/texture_00.png"
+		],
+		"DisplayInfo": "president.cdi3.json",
+		"Motions": {
+			"": [
+				{
+					"File": "motion/President_lose.motion3.json"
+				},
+				{
+					"File": "motion/President_cheers.motion3.json"
+				},
+				{
+					"File": "motion/President_loseloop.motion3.json"
+				},
+				{
+					"File": "motion/President_win.motion3.json"
+				}
+			]
+		}
+	},
+	"Groups": [
+		{
+			"Target": "Parameter",
+			"Name": "EyeBlink",
+			"Ids": []
+		},
+		{
+			"Target": "Parameter",
+			"Name": "LipSync",
+			"Ids": []
+		}
+	],
+	"HitAreas": []
+}

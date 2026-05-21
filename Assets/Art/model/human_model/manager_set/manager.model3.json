@@ -1,0 +1,39 @@
+{
+	"Version": 3,
+	"FileReferences": {
+		"Moc": "manager.moc3",
+		"Textures": [
+			"manager.2048/texture_00.png"
+		],
+		"DisplayInfo": "manager.cdi3.json",
+		"Motions": {
+			"": [
+				{
+					"File": "motion/manager_lose.motion3.json"
+				},
+				{
+					"File": "motion/manager_win.motion3.json"
+				},
+				{
+					"File": "motion/manager_loseloop.motion3.json"
+				},
+				{
+					"File": "motion/manager_cheers.motion3.json"
+				}
+			]
+		}
+	},
+	"Groups": [
+		{
+			"Target": "Parameter",
+			"Name": "EyeBlink",
+			"Ids": []
+		},
+		{
+			"Target": "Parameter",
+			"Name": "LipSync",
+			"Ids": []
+		}
+	],
+	"HitAreas": []
+}

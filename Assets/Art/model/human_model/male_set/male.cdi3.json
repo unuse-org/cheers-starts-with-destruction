@@ -1,0 +1,98 @@
+{
+	"Version": 3,
+	"Parameters": [
+		{
+			"Id": "ParamAngleX",
+			"GroupId": "",
+			"Name": "角度 X"
+		},
+		{
+			"Id": "ParamAngleY",
+			"GroupId": "",
+			"Name": "角度 Y"
+		},
+		{
+			"Id": "ParamAngleZ",
+			"GroupId": "",
+			"Name": "角度 Z"
+		},
+		{
+			"Id": "ParamMouthOpenY",
+			"GroupId": "",
+			"Name": "口　開閉"
+		},
+		{
+			"Id": "ParamBodyAngleY",
+			"GroupId": "",
+			"Name": "体の回転 Y"
+		},
+		{
+			"Id": "ParamBodyAngleZ",
+			"GroupId": "",
+			"Name": "体の回転 Z"
+		},
+		{
+			"Id": "ParamArmR",
+			"GroupId": "",
+			"Name": "右腕"
+		},
+		{
+			"Id": "ParamArmL",
+			"GroupId": "",
+			"Name": "左腕"
+		}
+	],
+	"ParameterGroups": [],
+	"Parts": [
+		{
+			"Id": "Part",
+			"Name": "髪"
+		},
+		{
+			"Id": "Part10",
+			"Name": "鼻"
+		},
+		{
+			"Id": "Part12",
+			"Name": "口"
+		},
+		{
+			"Id": "Part14",
+			"Name": "耳"
+		},
+		{
+			"Id": "Part13",
+			"Name": "顔"
+		},
+		{
+			"Id": "Part15",
+			"Name": "首"
+		},
+		{
+			"Id": "Part16",
+			"Name": "左腕"
+		},
+		{
+			"Id": "Part17",
+			"Name": "右腕"
+		},
+		{
+			"Id": "Part18",
+			"Name": "体"
+		},
+		{
+			"Id": "Part19",
+			"Name": "ネクタイ"
+		},
+		{
+			"Id": "Part20",
+			"Name": "胴体"
+		}
+	],
+	"CombinedParameters": [
+		[
+			"ParamAngleX",
+			"ParamAngleY"
+		]
+	]
+}
