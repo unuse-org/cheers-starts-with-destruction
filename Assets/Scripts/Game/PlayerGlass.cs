@@ -14,6 +14,9 @@ namespace CheersGame.Game
         public int CurrentDurability { get; private set; }
         public bool IsBroken => CurrentDurability <= 0;
 
+        //ポストプロセス用の変数（仮）0.0f～1.0fでエフェクトの強さを調整する想定
+        public float DurabilityRatio => (GlassData != null && GlassData.MaxDurability > 0) ? (float)CurrentDurability / GlassData.MaxDurability : 0f;
+
         /// <summary>耐久値が変化したときに発火（現在の耐久値を通知）</summary>
         public event Action<int> OnDurabilityChanged;
 
