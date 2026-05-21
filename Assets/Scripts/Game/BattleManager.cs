@@ -179,7 +179,12 @@ namespace CheersGame.Game
                 LogHP(result.ToString(), damage);
             }
 
-            if (_playerGlass.IsBroken) return;
+            // 死亡確認時にSE再生
+            if (_playerGlass.IsBroken)
+            {
+                AudioFeedback.Instance.PlaySE(AudioFeedback.SEType.GameOver);
+                return;
+            }
 
             Animator animator = GetCurrentAnimator();
             NPCData npc = _gameManager.CurrentNPC;
@@ -187,15 +192,15 @@ namespace CheersGame.Game
             switch (result)
             {
                 case CheersResult.Victory:
+                    AudioFeedback.Instance.PlaySE(AudioFeedback.SEType.Break1);
                     TryPlayState(animator, npc?.AnimStateWin);
                     _gameManager.AddDefeat();
-                    AudioFeedback.Instance.PlaySE(AudioFeedback.SEType.Break1);
                     StartCoroutine(SpawnNextNPCAfterDelay());
                     break;
 
                 case CheersResult.Defeat:
+                    AudioFeedback.Instance.PlaySE(AudioFeedback.SEType.defeat);
                     TryPlayState(animator, npc?.AnimStateLose);
-                    AudioFeedback.Instance.PlaySE(AudioFeedback.SEType.Break1);
                     StartCoroutine(ContinueCheersAfterDelay());
                     break;
             }
