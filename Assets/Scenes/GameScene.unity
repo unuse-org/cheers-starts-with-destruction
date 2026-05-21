@@ -3458,7 +3458,10 @@ MonoBehaviour:
   defeatSE: {fileID: 8300000, guid: 5b103777df9ba4839b23b7f90cb2c16d, type: 3}
   GameOverSE: {fileID: 8300000, guid: 66e6cfc4b5c0b4086bdf59d4fc1eaf93, type: 3}
   CheersVoiceSEs:
-  - {fileID: 8300000, guid: 4a360a8454a1f48c58dfdd9f1b29b79e, type: 3}
+  - {fileID: 8300000, guid: dd8ea80a35c2749379ad063441bbe153, type: 3}
+  - {fileID: 8300000, guid: a2328d53a83a049fdbb515928285fca0, type: 3}
+  - {fileID: 8300000, guid: 1b53d8dded7d34ca1b9e0ff5c89fbf51, type: 3}
+  - {fileID: 8300000, guid: c8fa250784e0f4db781e043b3b8a26b0, type: 3}
 --- !u!1 &1792083525
 GameObject:
   m_ObjectHideFlags: 0
