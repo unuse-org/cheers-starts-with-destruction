@@ -8,7 +8,8 @@ public class AudioFeedback : MonoBehaviour
         Break1,
         Break2,
         defeat,
-        GameOver
+        GameOver,
+        CheersVoice
     }
 
     [Header("SE Clips")]
@@ -17,6 +18,7 @@ public class AudioFeedback : MonoBehaviour
     [SerializeField] private AudioClip Break2SE;
     [SerializeField] private AudioClip defeatSE;
     [SerializeField] private AudioClip GameOverSE;
+    [SerializeField] private AudioClip[] CheersVoiceSEs;
 
     private AudioSource audioSource;
 
@@ -50,6 +52,28 @@ public class AudioFeedback : MonoBehaviour
         audioSource.PlayOneShot(clip);
     }
 
+    public float PlayVoice(SEType type)
+    {
+        AudioClip clip = type == SEType.CheersVoice
+            ? GetRandomCheersVoiceClip()
+            : GetClip(type);
+
+        if (clip == null)
+        {
+            Debug.LogWarning($"[AudioFeedback] Voice SE not set: {type}");
+            return 0f;
+        }
+
+        audioSource.PlayOneShot(clip);
+        return clip.length;
+    }
+
+    public float GetClipLength(SEType type)
+    {
+        AudioClip clip = GetClip(type);
+        return clip != null ? clip.length : 0f;
+    }
+
     private AudioClip GetClip(SEType type)
     {
         switch (type)
@@ -64,7 +88,38 @@ public class AudioFeedback : MonoBehaviour
                 return defeatSE;
             case SEType.GameOver:
                 return GameOverSE;
+            case SEType.CheersVoice:
+                return GetFirstCheersVoiceClip();
         }
+        return null;
+    }
+
+    private AudioClip GetRandomCheersVoiceClip()
+    {
+        if (CheersVoiceSEs == null || CheersVoiceSEs.Length == 0)
+            return null;
+
+        int startIndex = Random.Range(0, CheersVoiceSEs.Length);
+        for (int i = 0; i < CheersVoiceSEs.Length; i++)
+        {
+            AudioClip clip = CheersVoiceSEs[(startIndex + i) % CheersVoiceSEs.Length];
+            if (clip != null)
+                return clip;
+        }
+
+        return null;
+    }
+
+    private AudioClip GetFirstCheersVoiceClip()
+    {
+        if (CheersVoiceSEs == null) return null;
+
+        for (int i = 0; i < CheersVoiceSEs.Length; i++)
+        {
+            if (CheersVoiceSEs[i] != null)
+                return CheersVoiceSEs[i];
+        }
+
         return null;
     }
 }

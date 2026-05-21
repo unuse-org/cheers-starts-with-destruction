@@ -72,6 +72,7 @@ namespace CheersGame.Game
         public event Action<CheersResult> OnCheersResolved;
 
         private ISensorInput _sensorInput;
+        private Coroutine _cheersReadyCoroutine;
 
         private void Awake()
         {
@@ -102,6 +103,12 @@ namespace CheersGame.Game
                 _npcController.OnCheersReady -= HandleCheersReady;
             if (_timingSystem != null)
                 _timingSystem.OnWindowExpired -= HandleWindowExpired;
+
+            if (_cheersReadyCoroutine != null)
+            {
+                StopCoroutine(_cheersReadyCoroutine);
+                _cheersReadyCoroutine = null;
+            }
         }
 
         //アニメーター取得
@@ -207,6 +214,14 @@ namespace CheersGame.Game
         }
         private void HandleCheersReady()
         {
+            if (_cheersReadyCoroutine != null)
+                StopCoroutine(_cheersReadyCoroutine);
+
+            _cheersReadyCoroutine = StartCoroutine(HandleCheersReadyCoroutine());
+        }
+
+        private IEnumerator HandleCheersReadyCoroutine()
+        {
             NPCData npc = _gameManager.CurrentNPC;
             Animator animator = GetCurrentAnimator();
             TryPlayState(animator, npc?.AnimStateCheers);
@@ -217,7 +232,26 @@ namespace CheersGame.Game
             float duration = baseDuration / reactionSpeed;
 
             Debug.Log($"[Difficulty] defeats={_gameManager.DefeatCount} step={difficultyStep} baseWindow={baseDuration:F2}s random={randomOffset:+0.00;-0.00;0.00}s reaction={reactionSpeed:F2} actualWindow={duration:F2}s");
+
+            float voiceLength = AudioFeedback.Instance != null
+                ? AudioFeedback.Instance.PlayVoice(AudioFeedback.SEType.CheersVoice)
+                : 0f;
+            float delayUntilWindow = Mathf.Max(0f, voiceLength - duration * 0.5f);
+
+            if (delayUntilWindow > 0f)
+            {
+                Debug.Log($"[BattleManager] Cheers voice sync. voice={voiceLength:F2}s delay={delayUntilWindow:F2}s best={duration * 0.5f:F2}s after window start");
+                yield return new WaitForSeconds(delayUntilWindow);
+            }
+
+            if (_gameManager == null || _gameManager.CurrentState != GameState.Game)
+            {
+                _cheersReadyCoroutine = null;
+                yield break;
+            }
+
             _timingSystem.StartWindow(duration);
+            _cheersReadyCoroutine = null;
         }
 
         private int GetDifficultyStep()
