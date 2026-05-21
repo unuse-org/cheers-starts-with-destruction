@@ -2623,7 +2623,7 @@ MonoBehaviour:
   m_fontSizeMin: 18
   m_fontSizeMax: 72
   m_fontStyle: 1
-  m_HorizontalAlignment: 1
+  m_HorizontalAlignment: 2
   m_VerticalAlignment: 256
   m_textAlignment: 65535
   m_characterSpacing: 0
@@ -2655,7 +2655,7 @@ MonoBehaviour:
   m_VertexBufferAutoSizeReduction: 0
   m_useMaxVisibleDescender: 1
   m_pageToDisplay: 1
-  m_margin: {x: 0, y: 0, z: 0, w: 0}
+  m_margin: {x: -206.88187, y: 0, z: -229.10065, w: 0}
   m_isUsingLegacyAnimationComponent: 0
   m_isVolumetricText: 0
   m_hasFontAssetChanged: 0
@@ -2744,6 +2744,9 @@ MonoBehaviour:
   - {fileID: 21300000, guid: b5e7c8b397ae74cb0ac9bc225c29efc0, type: 3}
   - {fileID: 21300000, guid: 61e7f34245818460980e2873ffcc431f, type: 3}
   - {fileID: 21300000, guid: 8981c216d158f485880550d1408080f1, type: 3}
+  _durabilityShakeDuration: 0.18
+  _durabilityShakeMagnitude: 8
+  _durabilityShakeFrequency: 24
   _defeatCountDisplay: {fileID: 0}
   _glassNameText: {fileID: 1728993014}
   _npcNameText: {fileID: 417109138}

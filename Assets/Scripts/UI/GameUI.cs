@@ -27,6 +27,12 @@ namespace CheersGame.UI
         [SerializeField] private Image _durabilityImage;
         [Tooltip("残HPが多い順に並べる。0:最大、3:壊れかけ。")]
         [SerializeField] private Sprite[] _durabilitySprites;
+        [Tooltip("乾杯時にHPジョッキ画像を揺らす秒数。")]
+        [SerializeField] private float _durabilityShakeDuration = 0.18f;
+        [Tooltip("乾杯時にHPジョッキ画像が揺れる最大幅(px)。")]
+        [SerializeField] private float _durabilityShakeMagnitude = 8f;
+        [Tooltip("乾杯時にHPジョッキ画像が揺れる速さ。")]
+        [SerializeField] private float _durabilityShakeFrequency = 24f;
 
         [Header("Game Info")]
         [SerializeField] private CompoundNumberDisplay _defeatCountDisplay;
@@ -99,6 +105,9 @@ namespace CheersGame.UI
         private RectTransform _milestoneRoot;
         private Vector2 _milestoneOrigPos;
         private Coroutine _milestoneCoroutine;
+        private RectTransform _durabilityImageRect;
+        private Vector2 _durabilityImageOrigPos;
+        private Coroutine _durabilityShakeCoroutine;
 
         private void Start()
         {
@@ -111,6 +120,11 @@ namespace CheersGame.UI
                 _scoreOrigScale = _scoreImage.rectTransform.localScale;
             if (_scoreNumberDisplay != null)
                 _scoreNumberOrigScale = _scoreNumberDisplay.transform.localScale;
+            if (_durabilityImage != null)
+            {
+                _durabilityImageRect = _durabilityImage.rectTransform;
+                _durabilityImageOrigPos = _durabilityImageRect.anchoredPosition;
+            }
             if (_milestoneImage != null)
             {
                 _milestoneRoot = _milestoneImage.rectTransform.parent as RectTransform;
@@ -164,6 +178,8 @@ namespace CheersGame.UI
                 _battleManager.OnTimingJudged  -= HandleTimingJudged;
                 _battleManager.OnCheersResolved -= HandleCheersResolved;
             }
+
+            ResetDurabilityShake();
         }
 
         private void Update()
@@ -214,6 +230,8 @@ namespace CheersGame.UI
 
         private void HandleCheersResolved(CheersResult _)
         {
+            PlayDurabilityShake();
+
             Sprite sprite = GetJudgeSprite(_lastTimingScore);
 
             if (sprite == null) return;
@@ -449,6 +467,62 @@ namespace CheersGame.UI
 
         private static float EaseOutQuart(float t) => 1f - Mathf.Pow(1f - t, 4f);
         private static float EaseInQuart(float t)  => t * t * t * t;
+
+        // ── HPジョッキ演出 ────────────────────────────────────────────────
+
+        private void PlayDurabilityShake()
+        {
+            if (_durabilityImage == null) return;
+
+            if (_durabilityImageRect == null)
+            {
+                _durabilityImageRect = _durabilityImage.rectTransform;
+                _durabilityImageOrigPos = _durabilityImageRect.anchoredPosition;
+            }
+
+            if (_durabilityShakeCoroutine != null)
+                StopCoroutine(_durabilityShakeCoroutine);
+
+            _durabilityImageRect.anchoredPosition = _durabilityImageOrigPos;
+            _durabilityShakeCoroutine = StartCoroutine(ShakeDurabilityImage());
+        }
+
+        private IEnumerator ShakeDurabilityImage()
+        {
+            if (_durabilityImageRect == null) yield break;
+
+            float duration = Mathf.Max(0.01f, _durabilityShakeDuration);
+            float elapsed = 0f;
+
+            while (elapsed < duration)
+            {
+                elapsed += Time.deltaTime;
+                float t = Mathf.Clamp01(elapsed / duration);
+                float amplitude = _durabilityShakeMagnitude * (1f - t);
+                float phase = elapsed * _durabilityShakeFrequency * Mathf.PI * 2f;
+                Vector2 offset = new Vector2(
+                    Mathf.Sin(phase) * amplitude,
+                    Mathf.Sin(phase * 1.7f + 0.6f) * amplitude * 0.45f);
+
+                _durabilityImageRect.anchoredPosition = _durabilityImageOrigPos + offset;
+                yield return null;
+            }
+
+            _durabilityImageRect.anchoredPosition = _durabilityImageOrigPos;
+            _durabilityShakeCoroutine = null;
+        }
+
+        private void ResetDurabilityShake()
+        {
+            if (_durabilityShakeCoroutine != null)
+            {
+                StopCoroutine(_durabilityShakeCoroutine);
+                _durabilityShakeCoroutine = null;
+            }
+
+            if (_durabilityImageRect != null)
+                _durabilityImageRect.anchoredPosition = _durabilityImageOrigPos;
+        }
 
         // ── タイミングガイドUI ──────────────────────────────────────────────
 
