@@ -15,7 +15,7 @@ namespace CheersGame.Game
         [SerializeField] private float _windowDuration = 2.0f;
 
         [Tooltip("Good ゾーン帯の半径（秒）— この範囲外はスコア 0")]
-        [SerializeField] private float _goodRadius = 0.6f;
+        [SerializeField] private float _goodRadius = 0.8f;
 
         /// <summary>判定ウィンドウが開いているか</summary>
         public bool IsWindowOpen { get; private set; }

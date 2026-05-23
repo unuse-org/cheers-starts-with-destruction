@@ -38,10 +38,10 @@ namespace CheersGame.Game
         [Header("Battle Config")]
         [Tooltip("1回の乾杯で受ける最大ダメージ。タイミングが中心から離れるほどこの値に近づく。")]
         [FormerlySerializedAs("_battlePower")]
-        [SerializeField] private float _maxDamagePerCheers = 60f;
+        [SerializeField] private float _maxDamagePerCheers = 50f;
 
         [Tooltip("この値以上のダメージを受けたら Defeat 演出、それ未満なら Victory 演出。")]
-        [SerializeField] private int _defeatDamageThreshold = 50;
+        [SerializeField] private int _defeatDamageThreshold = 30;
 
         [Tooltip("基準ウィンドウ時間（秒）。NPC の ReactionSpeed で割って実際の時間を決定する。")]
         [SerializeField] private float _baseWindowDuration = 1.4f;

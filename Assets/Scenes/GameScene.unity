@@ -2879,7 +2879,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 45a0994e985a244369cb00ff0d42b060, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::CheersGame.Input.RealSensorInput
-  portName: 
+  portName: /dev/cu.usbserial-5152981038
   baudRate: 115200
   cheersVelocityThreshold: 5
   showLog: 0
@@ -3113,7 +3113,7 @@ MonoBehaviour:
   _playerGlass: {fileID: 1012565733}
   _timingSystem: {fileID: 2126727515}
   _sensorInputComponent: {fileID: 1507574719}
-  _maxDamagePerCheers: 50
+  _maxDamagePerCheers: 35
   _defeatDamageThreshold: 20
   _baseWindowDuration: 1.4
   _defeatsPerDifficultyStep: 3
