@@ -89,7 +89,7 @@ namespace CheersGame.UI
 
         /// <summary>
         /// タイトル中の乾杯入力を判定する。
-        /// judge_1incredible 相当のタイミングだけゲーム開始を許可する。
+        /// judge_3great 以上に相当するタイミングでゲーム開始を許可する。
         /// </summary>
         public bool TryJudgeStart()
         {
@@ -102,10 +102,10 @@ namespace CheersGame.UI
 
             Sprite judgeSprite = GetJudgeSprite(timingScore);
 
-            bool isIncredible = timingScore >= _thresholdIncredible;
-            PlayJudge(judgeSprite, isIncredible ? _startJudgeDisplayDuration : _judgeDisplayDuration);
+            bool canStart = timingScore >= _thresholdGreat;
+            PlayJudge(judgeSprite, canStart ? _startJudgeDisplayDuration : _judgeDisplayDuration);
 
-            if (!isIncredible)
+            if (!canStart)
             {
                 Debug.Log($"[TitleUI] Start denied. timing={timingScore:F2}");
                 return false;
