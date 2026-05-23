@@ -2157,6 +2157,7 @@ MonoBehaviour:
   _glassStartOffset: 500
   _guidePosition: {x: 0, y: -900}
   _glassSize: {x: 320, y: 320}
+  _incredibleZoneColor: {r: 1, g: 0.18, b: 0.12, a: 1}
   _judgeImage: {fileID: 0}
   _judgeIncredible: {fileID: 21300000, guid: fa0ab2bb63eb645538e40c215bd381ee, type: 3}
   _judgePerfect: {fileID: 21300000, guid: 27b6ed918452c47ff8b577df9e40a22d, type: 3}
@@ -2776,6 +2777,7 @@ MonoBehaviour:
   _leftGlassRect: {fileID: 789115090}
   _rightGlassRect: {fileID: 343405938}
   _glassStartOffset: 500
+  _incredibleZoneColor: {r: 1, g: 0.18, b: 0.12, a: 1}
   _milestoneImage: {fileID: 2055688441}
   _milestoneDisplay: {fileID: 53834999}
   _milestoneDuration: 2

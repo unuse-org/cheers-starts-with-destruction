@@ -53,6 +53,8 @@ namespace CheersGame.UI
         [SerializeField] private RectTransform _rightGlassRect;
         [Tooltip("ジョッキの初期 X 位置（中央からのオフセット px）")]
         [SerializeField] private float _glassStartOffset = 500f;
+        [Tooltip("judge_1incredible 判定範囲でジョッキに適用する色")]
+        [SerializeField] private Color _incredibleZoneColor = new Color(1f, 0.18f, 0.12f, 1f);
 
         [Header("Milestone Banner")]
         [Tooltip("score_upper.png を表示する Image（右上に配置）")]
@@ -108,6 +110,10 @@ namespace CheersGame.UI
         private RectTransform _durabilityImageRect;
         private Vector2 _durabilityImageOrigPos;
         private Coroutine _durabilityShakeCoroutine;
+        private Image _leftGlassImage;
+        private Image _rightGlassImage;
+        private Color _leftGlassDefaultColor = Color.white;
+        private Color _rightGlassDefaultColor = Color.white;
 
         private void Start()
         {
@@ -137,6 +143,8 @@ namespace CheersGame.UI
 
         private void OnEnable()
         {
+            CacheTimingGuideImages();
+
             if (_playerGlass != null)
                 _playerGlass.OnDurabilityChanged += HandleDurabilityChanged;
 
@@ -180,6 +188,7 @@ namespace CheersGame.UI
             }
 
             ResetDurabilityShake();
+            ResetTimingGuideColor();
         }
 
         private void Update()
@@ -538,11 +547,18 @@ namespace CheersGame.UI
                 _timingGuideVisible = shouldShow;
             }
 
-            if (!shouldShow) return;
+            if (!shouldShow)
+            {
+                ResetTimingGuideColor();
+                return;
+            }
 
             float x = Mathf.Lerp(_glassStartOffset, 0f, _timingSystem.GlassProgress);
             if (_leftGlassRect  != null) _leftGlassRect.anchoredPosition  = new Vector2(-x, _leftGlassRect.anchoredPosition.y);
             if (_rightGlassRect != null) _rightGlassRect.anchoredPosition = new Vector2( x, _rightGlassRect.anchoredPosition.y);
+
+            bool isIncredibleZone = _timingSystem.GetTimingScore() >= _thresholdIncredible;
+            SetTimingGuideColor(isIncredibleZone);
         }
 
         // ── 表示更新 ────────────────────────────────────────────────────────
@@ -572,6 +588,38 @@ namespace CheersGame.UI
                 _timingGuidePanel.SetActive(false);
                 _timingGuideVisible = false;
             }
+            ResetTimingGuideColor();
+        }
+
+        private void CacheTimingGuideImages()
+        {
+            if (_leftGlassImage == null && _leftGlassRect != null)
+            {
+                _leftGlassImage = _leftGlassRect.GetComponent<Image>();
+                if (_leftGlassImage != null)
+                    _leftGlassDefaultColor = _leftGlassImage.color;
+            }
+
+            if (_rightGlassImage == null && _rightGlassRect != null)
+            {
+                _rightGlassImage = _rightGlassRect.GetComponent<Image>();
+                if (_rightGlassImage != null)
+                    _rightGlassDefaultColor = _rightGlassImage.color;
+            }
+        }
+
+        private void SetTimingGuideColor(bool isIncredibleZone)
+        {
+            if (_leftGlassImage != null)
+                _leftGlassImage.color = isIncredibleZone ? _incredibleZoneColor : _leftGlassDefaultColor;
+            if (_rightGlassImage != null)
+                _rightGlassImage.color = isIncredibleZone ? _incredibleZoneColor : _rightGlassDefaultColor;
+        }
+
+        private void ResetTimingGuideColor()
+        {
+            if (_leftGlassImage != null) _leftGlassImage.color = _leftGlassDefaultColor;
+            if (_rightGlassImage != null) _rightGlassImage.color = _rightGlassDefaultColor;
         }
 
         private void UpdateDurabilityDisplay(int currentDurability)

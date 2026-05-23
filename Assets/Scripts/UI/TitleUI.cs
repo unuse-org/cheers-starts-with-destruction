@@ -22,6 +22,7 @@ namespace CheersGame.UI
         [SerializeField] private float _glassStartOffset = 500f;
         [SerializeField] private Vector2 _guidePosition = new Vector2(0f, -900f);
         [SerializeField] private Vector2 _glassSize = new Vector2(320f, 320f);
+        [SerializeField] private Color _incredibleZoneColor = new Color(1f, 0.18f, 0.12f, 1f);
 
         [Header("Judge Sprites")]
         [SerializeField] private Image _judgeImage;
@@ -46,6 +47,8 @@ namespace CheersGame.UI
         private static readonly float PulseDuration = 0.55f;
 
         private GameObject _timingGuidePanel;
+        private Image _leftGlassImage;
+        private Image _rightGlassImage;
         private RectTransform _leftGlassRect;
         private RectTransform _rightGlassRect;
         private Coroutine _timingLoopCoroutine;
@@ -157,11 +160,17 @@ namespace CheersGame.UI
                 panelRect.sizeDelta = new Vector2(1080f, 520f);
             }
 
-            if (_leftGlassRect == null)
-                _leftGlassRect = CreateGlassImage("LeftGlass", true);
+            if (_leftGlassImage == null)
+            {
+                _leftGlassImage = CreateGlassImage("LeftGlass", true);
+                _leftGlassRect = _leftGlassImage.rectTransform;
+            }
 
-            if (_rightGlassRect == null)
-                _rightGlassRect = CreateGlassImage("RightGlass", false);
+            if (_rightGlassImage == null)
+            {
+                _rightGlassImage = CreateGlassImage("RightGlass", false);
+                _rightGlassRect = _rightGlassImage.rectTransform;
+            }
 
             if (_judgeImage == null)
             {
@@ -176,7 +185,7 @@ namespace CheersGame.UI
             _judgeImage.gameObject.SetActive(false);
         }
 
-        private RectTransform CreateGlassImage(string objectName, bool flipX)
+        private Image CreateGlassImage(string objectName, bool flipX)
         {
             Image image = CreateImage(objectName, _timingGuidePanel.transform, _glassSize);
             image.sprite = _glassSprite;
@@ -185,7 +194,7 @@ namespace CheersGame.UI
 
             RectTransform rect = image.rectTransform;
             rect.localScale = new Vector3(flipX ? -1f : 1f, 1f, 1f);
-            return rect;
+            return image;
         }
 
         private static Image CreateImage(string objectName, Transform parent, Vector2 size)
@@ -216,6 +225,8 @@ namespace CheersGame.UI
                 _judgeImage.gameObject.SetActive(false);
                 ApplyJudge(1f, _judgeOrigPos, 1f);
             }
+
+            SetGlassColor(Color.white);
         }
 
         private void StartTimingLoop()
@@ -237,6 +248,7 @@ namespace CheersGame.UI
             if (_timingSystem != null)
                 _timingSystem.CloseWindow();
 
+            SetGlassColor(Color.white);
             SetTimingGuideVisible(false);
         }
 
@@ -270,11 +282,18 @@ namespace CheersGame.UI
             bool shouldShow = isActiveAndEnabled && !_isStartAccepted && _timingSystem.IsWindowOpen;
             SetTimingGuideVisible(shouldShow);
 
-            if (!shouldShow) return;
+            if (!shouldShow)
+            {
+                SetGlassColor(Color.white);
+                return;
+            }
 
             float x = Mathf.Lerp(_glassStartOffset, 0f, _timingSystem.GlassProgress);
             _leftGlassRect.anchoredPosition = new Vector2(-x, _leftGlassRect.anchoredPosition.y);
             _rightGlassRect.anchoredPosition = new Vector2(x, _rightGlassRect.anchoredPosition.y);
+
+            bool isIncredibleZone = _timingSystem.GetTimingScore() >= _thresholdIncredible;
+            SetGlassColor(isIncredibleZone ? _incredibleZoneColor : Color.white);
         }
 
         private void SetTimingGuideVisible(bool visible)
@@ -284,6 +303,12 @@ namespace CheersGame.UI
 
             _timingGuidePanel.SetActive(visible);
             _timingGuideVisible = visible;
+        }
+
+        private void SetGlassColor(Color color)
+        {
+            if (_leftGlassImage != null) _leftGlassImage.color = color;
+            if (_rightGlassImage != null) _rightGlassImage.color = color;
         }
 
         private void PlayJudge(Sprite judgeSprite, float displayDuration)
