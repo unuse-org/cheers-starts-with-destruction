@@ -91,13 +91,11 @@ namespace CheersGame.UI
         public bool TryJudgeStart()
         {
             if (_isStartAccepted) return true;
+            if (_timingSystem == null || !_timingSystem.IsWindowOpen) return false;
 
-            float timingScore = _timingSystem != null && _timingSystem.IsWindowOpen
-                ? _timingSystem.GetTimingScore()
-                : 0f;
+            float timingScore = _timingSystem.GetTimingScore();
 
-            if (_timingSystem != null)
-                _timingSystem.CloseWindow();
+            _timingSystem.CloseWindow();
 
             Sprite judgeSprite = GetJudgeSprite(timingScore);
 
