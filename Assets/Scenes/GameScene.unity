@@ -2150,6 +2150,27 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::CheersGame.UI.TitleUI
   _startImage: {fileID: 428147862}
+  _timingSystem: {fileID: 2126727515}
+  _glassSprite: {fileID: 21300000, guid: 0f66e8806e53f49b3b3843f3bd886232, type: 3}
+  _titleWindowDuration: 1.4
+  _loopRestartDelay: 0.25
+  _glassStartOffset: 500
+  _guidePosition: {x: 0, y: -900}
+  _glassSize: {x: 320, y: 320}
+  _judgeImage: {fileID: 0}
+  _judgeIncredible: {fileID: 21300000, guid: fa0ab2bb63eb645538e40c215bd381ee, type: 3}
+  _judgePerfect: {fileID: 21300000, guid: 27b6ed918452c47ff8b577df9e40a22d, type: 3}
+  _judgeGreat: {fileID: 21300000, guid: bd61b19f482b34ba1b8ad85eb7a89744, type: 3}
+  _judgeGood: {fileID: 21300000, guid: d7edd70b96c3d4f6daf00e9aaa8192f3, type: 3}
+  _judgeBad: {fileID: 21300000, guid: a0b438c5f3c06475d852605ae80176c6, type: 3}
+  _thresholdIncredible: 0.8
+  _thresholdPerfect: 0.6
+  _thresholdGreat: 0.4
+  _thresholdGood: 0.2
+  _judgePosition: {x: 0, y: 0}
+  _judgeSize: {x: 1800, y: 440}
+  _judgeDisplayDuration: 0.9
+  _startJudgeDisplayDuration: 2.8
 --- !u!1 &1012565732
 GameObject:
   m_ObjectHideFlags: 0

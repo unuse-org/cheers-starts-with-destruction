@@ -119,7 +119,7 @@ namespace CheersGame.Game
             switch (CurrentState)
             {
                 case GameState.Title:
-                    if (!_isTransitioning)
+                    if (!_isTransitioning && (_titleUI == null || _titleUI.TryJudgeStart()))
                         StartCoroutine(StartGameWithTransition());
                     break;
 

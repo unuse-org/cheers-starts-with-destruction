@@ -84,7 +84,7 @@ namespace CheersGame.Game
 
         private IEnumerator CountdownCoroutine()
         {
-            float interval = Mathf.Max(0f, _countdownDuration) / 3f;
+            float interval = Mathf.Max(0f, _countdownDuration) / 6f;
 
             for (int i = 3; i >= 1; i--)
             {
