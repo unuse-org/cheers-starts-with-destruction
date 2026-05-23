@@ -24,6 +24,9 @@ namespace CheersGame.Game
         /// <summary>カウントダウン完了時に発火</summary>
         public event Action OnCheersReady;
 
+        /// <summary>乾杯シーケンス開始時に、乾杯準備までの猶予秒数を通知する。</summary>
+        public event Action<float> OnCheersVoiceLeadStarted;
+
         /// <summary>カウント通知（3, 2, 1, 0）。0 = 乾杯!</summary>
         public event Action<int> OnCountdownTick;
 
@@ -50,6 +53,9 @@ namespace CheersGame.Game
                 StopCoroutine(_countdownCoroutine);
                 _countdownCoroutine = null;
             }
+
+            float voiceLeadTime = _useCountdown ? Mathf.Max(0f, _countdownDuration) : 0f;
+            OnCheersVoiceLeadStarted?.Invoke(voiceLeadTime);
 
             if (!_useCountdown)
             {

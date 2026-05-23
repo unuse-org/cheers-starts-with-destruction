@@ -1998,7 +1998,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d0a2325107c8d49ecbe5b92c41813867, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::CheersGame.Game.GameManager
-  _sensorInputComponent: {fileID: 1030815645}
+  _sensorInputComponent: {fileID: 1507574719}
   _playerGlass: {fileID: 1012565733}
   _initialGlassData: {fileID: 11400000, guid: 05745bf3c11494f828bc0fd1bfbb15b4, type: 2}
   _npcController: {fileID: 420397275}
@@ -2685,7 +2685,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &1441991660
 RectTransform:
   m_ObjectHideFlags: 0
@@ -2879,7 +2879,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 45a0994e985a244369cb00ff0d42b060, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::CheersGame.Input.RealSensorInput
-  portName: 
+  portName: /dev/cu.usbserial-5152981038
   baudRate: 115200
   cheersVelocityThreshold: 5
   showLog: 0
@@ -3112,8 +3112,8 @@ MonoBehaviour:
   _npcController: {fileID: 420397275}
   _playerGlass: {fileID: 1012565733}
   _timingSystem: {fileID: 2126727515}
-  _sensorInputComponent: {fileID: 1030815645}
-  _maxDamagePerCheers: 50
+  _sensorInputComponent: {fileID: 1507574719}
+  _maxDamagePerCheers: 35
   _defeatDamageThreshold: 20
   _baseWindowDuration: 1.4
   _defeatsPerDifficultyStep: 3
@@ -3457,6 +3457,11 @@ MonoBehaviour:
   Break2SE: {fileID: 8300000, guid: 2a6b786f9322a479683874e2cd6b3ba1, type: 3}
   defeatSE: {fileID: 8300000, guid: 5b103777df9ba4839b23b7f90cb2c16d, type: 3}
   GameOverSE: {fileID: 8300000, guid: 66e6cfc4b5c0b4086bdf59d4fc1eaf93, type: 3}
+  CheersVoiceSEs:
+  - {fileID: 8300000, guid: dd8ea80a35c2749379ad063441bbe153, type: 3}
+  - {fileID: 8300000, guid: a2328d53a83a049fdbb515928285fca0, type: 3}
+  - {fileID: 8300000, guid: 1b53d8dded7d34ca1b9e0ff5c89fbf51, type: 3}
+  - {fileID: 8300000, guid: c8fa250784e0f4db781e043b3b8a26b0, type: 3}
 --- !u!1 &1792083525
 GameObject:
   m_ObjectHideFlags: 0
@@ -3552,7 +3557,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &1875219857
 RectTransform:
   m_ObjectHideFlags: 0
