@@ -82,7 +82,7 @@ namespace CheersGame.UI
             }
             if (_instructionText != null)
             {
-                _instructionText.text = "ジョッキを振ってタイトルへ";
+                _instructionText.text = "乾杯してタイトルへ";
                 SetAlpha(_instructionText, 0f);
                 _instructionText.gameObject.SetActive(false);
             }
